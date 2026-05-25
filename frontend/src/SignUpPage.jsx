@@ -2,8 +2,6 @@ import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "./UserContext";
 
-const API_BASE_URL = "https://wandrr-api.onrender.com";
-
 export default function SignUpPage() {
   const { setUserId: setUserContext } = useUser();
   const [step, setStep] = useState(1); // 1: Enter details, 2: Verify Email OTP
@@ -46,7 +44,7 @@ export default function SignUpPage() {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/signup/initiate`, {
+      const res = await fetch(`/api/auth/signup/initiate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim(), phone: (phone && phone !== "+91" && phone.length === 13) ? phone : undefined, email: email.trim() })
@@ -86,7 +84,7 @@ export default function SignUpPage() {
     }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/signup/verify`, {
+      const res = await fetch(`/api/auth/signup/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, emailOTP })
@@ -113,7 +111,7 @@ export default function SignUpPage() {
   const handleResendOTPs = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/signup/initiate`, {
+      const res = await fetch(`/api/auth/signup/initiate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name.trim(), phone: phone.trim() || undefined, email: email.trim() })

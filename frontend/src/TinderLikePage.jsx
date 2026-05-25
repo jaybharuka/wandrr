@@ -3,8 +3,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "./UserContext";
 import BottomNav from "./BottomNav";
 
-const API_BASE_URL = "https://wandrr-api.onrender.com";
-
 export default function TinderLikePage() {
   const locationObj = useLocation();
   const navigate = useNavigate();
@@ -228,7 +226,7 @@ export default function TinderLikePage() {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/travel-posts`, {
+      const response = await fetch(`/api/travel-posts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

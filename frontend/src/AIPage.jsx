@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { DESTINATIONS, STYLES, BUDGETS, generateItinerary } from "./itineraryData";
 
-const API_BASE_URL = "https://wandrr-api.onrender.com";
-
 export default function AIPage() {
   const navigate = useNavigate();
   const [city, setCity]       = useState("Delhi");
@@ -36,7 +34,7 @@ export default function AIPage() {
     setResult(null);
     setApiError(null);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/ai/itinerary`, {
+      const res = await fetch(`/api/ai/itinerary`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ city, days, style, budget }),

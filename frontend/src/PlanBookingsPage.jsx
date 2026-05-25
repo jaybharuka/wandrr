@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useUser } from "./UserContext";
 
-const API_BASE_URL = "https://wandrr-api.onrender.com";
-
 const DESTINATIONS = [
   "Delhi", "Mumbai", "Bangalore", "Chennai", "Hyderabad", "Kolkata",
   "Pune", "Jaipur", "Ahmedabad", "Goa", "Ladakh", "Manali",
@@ -104,7 +102,7 @@ const PlanBookingsPage = () => {
     setFlights([]);
     setHasSearched(true);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/flights/search`, {
+      const res = await fetch(`/api/flights/search`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ from: fromCity, to: toCity, date: travelDate, passengers }),
@@ -133,7 +131,7 @@ const PlanBookingsPage = () => {
     const totalFare = (flight.fare * passengers).toFixed(2);
     const details = `${flight.airline} ${flight.flight_no} | ${fromCity} → ${toCity} | ${travelDate} | Dep: ${flight.dep} Arr: ${flight.arr} (${flight.duration}, ${flight.stops}) | ${flight.currency} ${totalFare}`;
     try {
-      const res = await fetch(`${API_BASE_URL}/api/bookings`, {
+      const res = await fetch(`/api/bookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -164,7 +162,7 @@ const PlanBookingsPage = () => {
     if (nights < 1) { showToast("Check-out must be after check-in.", false); return; }
     setBookingHotel(hotel.name);
     try {
-      const res = await fetch(`${API_BASE_URL}/api/hotelBookings`, {
+      const res = await fetch(`/api/hotelBookings`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

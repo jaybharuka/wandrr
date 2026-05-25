@@ -1,12 +1,15 @@
-const express = require("express");
-const cors = require('cors');
-const http = require('http');
-const { Server } = require('socket.io');
-require('dotenv').config(); // Load environment variables
+import express from 'express';
+import cors from 'cors';
+import http from 'http';
+import { Server } from 'socket.io';
+import dotenv from 'dotenv';
+import db from './config/db.js';
+
+dotenv.config(); // Load environment variables
+
 const app = express();
 const httpServer = http.createServer(app);
 const PORT = process.env.PORT || 5000;
-const db = require('./config/db');
 
 const io = new Server(httpServer, {
   cors: { origin: "*", methods: ["GET", "POST"] }
@@ -53,37 +56,37 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {});
 });
 
-const authRoutes = require('./routes/auth');
+import authRoutes from './routes/auth.js';
 app.use('/api/auth', authRoutes);
 
-const bookingsRoutes = require('./routes/bookings');
+import bookingsRoutes from './routes/bookings.js';
 app.use('/api/bookings', bookingsRoutes);
 
-const travelPostsRoutes = require('./routes/travelPosts');
+import travelPostsRoutes from './routes/travelPosts.js';
 app.use('/api/travel-posts', travelPostsRoutes);
 
-const usersRoutes = require('./routes/users');
+import usersRoutes from './routes/users.js';
 app.use('/api/users', usersRoutes);
 
-const connectionRequestsRoutes = require('./routes/connectionRequests');
+import connectionRequestsRoutes from './routes/connectionRequests.js';
 app.use('/api/connection-requests', connectionRequestsRoutes);
 
-const hotelBookingsRoutes = require('./routes/hotelBookings');
+import hotelBookingsRoutes from './routes/hotelBookings.js';
 app.use('/api/hotelBookings', hotelBookingsRoutes);
 
-const groupsRoutes = require('./routes/groups');
+import groupsRoutes from './routes/groups.js';
 app.use('/api/groups', groupsRoutes);
 
-const flightsRoutes = require('./routes/flights');
+import flightsRoutes from './routes/flights.js';
 app.use('/api/flights', flightsRoutes);
 
-const hotelsRoutes = require('./routes/hotels');
+import hotelsRoutes from './routes/hotels.js';
 app.use('/api/hotels', hotelsRoutes);
 
-const aiRoutes = require('./routes/ai');
+import aiRoutes from './routes/ai.js';
 app.use('/api/ai', aiRoutes);
 
-const messagesRoutes = require('./routes/messages');
+import messagesRoutes from './routes/messages.js';
 app.use('/api/messages', messagesRoutes);
 
 httpServer.listen(PORT, () => {

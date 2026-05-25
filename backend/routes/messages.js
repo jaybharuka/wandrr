@@ -1,6 +1,7 @@
-const express = require("express");
+import express from "express";
+import db from "../config/db.js";
+
 const router = express.Router();
-const db = require("../config/db");
 
 // Auto-create messages table if it doesn't exist (PostgreSQL syntax)
 db.query(`
@@ -63,4 +64,4 @@ router.post("/", (req, res) => {
   );
 });
 
-module.exports = router;
+export default router;

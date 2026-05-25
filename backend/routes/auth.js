@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import db from '../config/db.js';
+import otpService from '../services/otpService.js';
+
 const router = express.Router();
-const db = require('../config/db');
-const otpService = require('../services/otpService');
 
 // POST /api/auth/signup/initiate - Start signup process and send OTPs
 router.post('/signup/initiate', async (req, res) => {
@@ -272,4 +273,4 @@ router.post('/signin/verify', (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

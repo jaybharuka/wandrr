@@ -1,6 +1,6 @@
-const { Resend } = require('resend');
-const { authenticator } = require('otplib');
-const crypto = require('crypto');
+import { Resend } from 'resend';
+import { authenticator } from 'otplib';
+import crypto from 'crypto';
 
 class OTPService {
   constructor() {
@@ -140,4 +140,4 @@ class OTPService {
   }
 }
 
-module.exports = new OTPService();
+export default new OTPService();
