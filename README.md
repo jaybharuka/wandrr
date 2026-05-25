@@ -1,17 +1,17 @@
 <div align="center">
 
-# ✈️ YAATRA
+# 🌍 Wandrr
 
-### Smart Travel Planning Platform for India
+### Connect with Fellow Travelers, Plan Adventures Together
 
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat&logo=vite)](https://vitejs.dev)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-339933?style=flat&logo=node.js)](https://nodejs.org)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql)](https://mysql.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14-336791?style=flat&logo=postgresql)](https://postgresql.org)
 [![Duffel](https://img.shields.io/badge/Duffel-Flight_API-FF5A1F?style=flat)](https://duffel.com)
 
-**Yaatra** is a full-stack travel companion app — find solo travel buddies, book real flights & hotels, manage travel groups, and get AI-generated day-by-day itineraries for 18 Indian destinations.
+**Wandrr** is a full-stack travel companion app — discover solo travelers and travel groups, book real flights & hotels, manage group adventures, and get AI-powered itineraries for 18 Indian destinations.
 
 </div>
 
@@ -43,7 +43,7 @@
 
 ### Backend
 - **Node.js** + **Express** — RESTful API server
-- **mysql2** — connection pool for MySQL queries
+- **pg** — connection pool for PostgreSQL queries
 - **Nodemailer** — email OTP delivery via Gmail SMTP
 - **otplib** — TOTP-based one-time password generation
 - **crypto** — secure random join-code generation for groups
@@ -54,7 +54,7 @@
 - Exchange rate conversion to INR built into the backend proxy
 
 ### Database
-- **MySQL 8** — relational schema with 7 tables
+- **PostgreSQL 14+** — relational schema with 7 tables
 - Raw SQL migrations in `backend/config/`
 
 ---
@@ -81,8 +81,8 @@
                               ┌────────────────────────┼───────────────────┐
                               │                        │                   │
                        ┌──────▼──────┐    ┌───────────▼──────┐   ┌────────▼──────┐
-                       │  MySQL DB   │    │  Duffel Flight   │   │  Gmail SMTP   │
-                       │  (local)    │    │     API          │   │  (Nodemailer) │
+                       │ PostgreSQL   │    │  Duffel Flight   │   │  Gmail SMTP   │
+                       │     DB      │    │     API          │   │  (Nodemailer) │
                        └─────────────┘    └──────────────────┘   └───────────────┘
 ```
 
@@ -92,15 +92,15 @@
 
 ### Prerequisites
 - Node.js 18+
-- MySQL 8.0
+- PostgreSQL 14+
 - A Gmail account with an [App Password](https://support.google.com/accounts/answer/185833)
 - A free [Duffel account](https://duffel.com) for the test API key
 
 ### 1. Clone & install
 
 ```bash
-git clone https://github.com/your-username/yaatra.git
-cd yaatra
+git clone https://github.com/jaybharuka/wandrr.git
+cd wandrr
 
 # Install backend deps
 cd backend && npm install
@@ -113,10 +113,10 @@ cd ../frontend && npm install
 
 ```bash
 # Create schema and all tables (run once)
-mysql -u root -p < backend/config/setup.sql
+psql -U postgres -d wandrr -f backend/config/setup.sql
 
 # Seed hotel data for all 18 destinations
-mysql -u root -p < backend/config/hotels_seed.sql
+psql -U postgres -d wandrr -f backend/config/hotels_seed.sql
 ```
 
 ### 3. Environment variables
@@ -128,11 +128,7 @@ cp backend/.env.example backend/.env
 ```
 
 ```env
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=root
-DB_PASSWORD=your_mysql_password
-DB_NAME=solo_travel_app
+DATABASE_URL=postgresql://postgres:your_password@localhost:5432/wandrr
 
 EMAIL_USER=your-gmail@gmail.com
 EMAIL_PASS=your-gmail-app-password
@@ -262,7 +258,7 @@ created_at           name                  hotel_bookings
 ## Project Structure
 
 ```
-yaatra/
+wandrr/
 ├── backend/
 │   ├── config/
 │   │   ├── db.js                 # MySQL connection pool
