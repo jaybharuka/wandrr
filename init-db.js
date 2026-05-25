@@ -5,7 +5,8 @@ const path = require('path');
 const DATABASE_URL = process.env.DATABASE_URL;
 
 if (!DATABASE_URL) {
-  console.error("❌ Error: DATABASE_URL environment variable not set");
+  console.error('❌ Error: DATABASE_URL environment variable not set');
+  console.error('Usage: DATABASE_URL="postgresql://..." node init-db.js');
   process.exit(1);
 }
 
