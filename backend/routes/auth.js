@@ -44,16 +44,18 @@ router.post('/signup/initiate', async (req, res) => {
       const otpExpiry = otpService.getOTPExpiry();
       const updateQuery = 'UPDATE users SET email_otp = $1, email_otp_expires_at = $2 WHERE id = $3';
 
-      db.query(updateQuery, [emailOTP, otpExpiry, existing.id], async (err) => {
+      db.query(updateQuery, [emailOTP, otpExpiry, existing.id], (err) => {
         if (err) {
           return res.status(500).json({ error: 'Failed to resend OTP.' });
         }
-        const emailResult = await otpService.sendEmailOTP(email, emailOTP, 'signup');
+        // Send email in background
+        otpService.sendEmailOTP(email, emailOTP, 'signup').catch(e => {
+          console.error('Background email send error:', e.message);
+        });
         return res.json({
           success: true,
           message: 'OTP resent to your email!',
-          userId: existing.id,
-          emailSent: emailResult.success
+          userId: existing.id
         });
       });
       return;
@@ -68,18 +70,22 @@ router.post('/signup/initiate', async (req, res) => {
       RETURNING id
     `;
 
-    db.query(insertQuery, [name, phone || null, email, emailOTP, otpExpiry], async (err, result) => {
+    db.query(insertQuery, [name, phone || null, email, emailOTP, otpExpiry], (err, result) => {
       if (err) {
         return res.status(500).json({ error: 'Failed to initiate signup.' });
       }
 
-      const emailResult = await otpService.sendEmailOTP(email, emailOTP, 'signup');
+      const userId = result.rows[0]?.id;
+
+      // Send email in background (don't wait)
+      otpService.sendEmailOTP(email, emailOTP, 'signup').catch(e => {
+        console.error('Background email send error:', e.message);
+      });
 
       res.status(201).json({
         success: true,
         message: 'OTP sent to your email!',
-        userId: result.rows[0]?.id,
-        emailSent: emailResult.success
+        userId
       });
     });
   });
@@ -182,26 +188,28 @@ router.post('/signin/initiate', async (req, res) => {
     const expiryColumn = otpType === 'phone' ? 'phone_otp_expires_at' : 'email_otp_expires_at';
 
     const updateQuery = `UPDATE users SET ${otpColumn} = $1, ${expiryColumn} = $2 WHERE id = $3`;
-    db.query(updateQuery, [otp, otpExpiry, user.id], async (err) => {
+    db.query(updateQuery, [otp, otpExpiry, user.id], (err) => {
       if (err) {
         console.error('Database update error:', err);
         return res.status(500).json({ error: 'Failed to generate OTP.' });
       }
 
-      let otpResult;
+      // Send OTP in background (don't wait)
       if (otpType === 'phone') {
-        otpResult = await otpService.sendPhoneOTP(user.phone, otp, 'signin');
+        otpService.sendPhoneOTP(user.phone, otp, 'signin').catch(e => {
+          console.error('Background phone OTP error:', e.message);
+        });
       } else {
-        otpResult = await otpService.sendEmailOTP(user.email, otp, 'signin');
+        otpService.sendEmailOTP(user.email, otp, 'signin').catch(e => {
+          console.error('Background email OTP error:', e.message);
+        });
       }
 
       res.json({
         success: true,
         message: `OTP sent to your ${otpType}!`,
         userId: user.id,
-        otpType,
-        otpSent: otpResult.success,
-        note: otpResult.note || undefined
+        otpType
       });
     });
   });
