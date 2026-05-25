@@ -7,8 +7,10 @@ class OTPService {
     // Initialize Resend with API key
     if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 'your-resend-api-key') {
       this.resend = new Resend(process.env.RESEND_API_KEY);
+      console.log('✅ Resend initialized with API key:', process.env.RESEND_API_KEY.substring(0, 10) + '...');
     } else {
       this.resend = null;
+      console.log('⚠️  Resend API key not configured:', process.env.RESEND_API_KEY);
     }
   }
 
@@ -42,6 +44,7 @@ class OTPService {
     }
 
     try {
+      console.log('📧 Attempting to send email via Resend to:', email);
       const result = await this.resend.emails.send({
         from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
         to: email,
@@ -59,13 +62,17 @@ class OTPService {
         `
       });
 
+      console.log('📧 Resend response:', { id: result.id, error: result.error });
+
       if (result.error) {
         throw new Error(result.error.message);
       }
 
+      console.log('✅ Email sent successfully via Resend');
       return { success: true, message: 'OTP sent to email successfully' };
     } catch (error) {
       console.error('❌ Email OTP send error:', error.message);
+      console.error('❌ Full error:', error);
       console.log('📧 EMAIL OTP (sent to console due to error):', {
         email: email,
         otp: otp,
