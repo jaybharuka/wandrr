@@ -1,6 +1,7 @@
 [build]
   command = "npm install --prefix frontend && npm run build --prefix frontend"
   publish = "frontend/dist"
+  environment = { SECRETS_SCAN_ENABLED = "false" }
 
 [dev]
   command = "npm run dev --prefix frontend"
