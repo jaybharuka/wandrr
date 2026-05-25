@@ -1,0 +1,18 @@
+[build]
+  command = "npm install --prefix frontend && npm run build --prefix frontend"
+  publish = "frontend/dist"
+
+[dev]
+  command = "npm run dev --prefix frontend"
+  port = 5173
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://wandrr-api.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require('cors');
 const http = require('http');
 const { Server } = require('socket.io');
-const path = require('path');
 require('dotenv').config(); // Load environment variables
 const app = express();
 const httpServer = http.createServer(app);
@@ -15,10 +14,6 @@ const io = new Server(httpServer, {
 
 app.use(cors());
 app.use(express.json()); // For parsing JSON bodies, needed for POST requests
-
-// Serve frontend build
-const frontendPath = path.join(__dirname, '../frontend/dist');
-app.use(express.static(frontendPath));
 
 app.get("/", (req, res) => {
   res.send("Wandrr Backend is running 🚀");
@@ -90,11 +85,6 @@ app.use('/api/ai', aiRoutes);
 
 const messagesRoutes = require('./routes/messages');
 app.use('/api/messages', messagesRoutes);
-
-// Serve React app for all non-API routes (SPA routing)
-app.get('*', (req, res) => {
-  res.sendFile(path.join(frontendPath, 'index.html'));
-});
 
 httpServer.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
