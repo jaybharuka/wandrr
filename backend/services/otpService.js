@@ -1,17 +1,15 @@
-const nodemailer = require('nodemailer');
+const { Resend } = require('resend');
 const { authenticator } = require('otplib');
 const crypto = require('crypto');
 
 class OTPService {
   constructor() {
-    // Configure email transporter (using Gmail as example)
-    this.emailTransporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER || 'your-email@gmail.com', // Set in .env file
-        pass: process.env.EMAIL_PASS || 'your-app-password'     // Set in .env file
-      }
-    });
+    // Initialize Resend with API key
+    if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 'your-resend-api-key') {
+      this.resend = new Resend(process.env.RESEND_API_KEY);
+    } else {
+      this.resend = null;
+    }
   }
 
   // Generate 6-digit OTP
@@ -28,41 +26,43 @@ class OTPService {
 
   // Send OTP via email
   async sendEmailOTP(email, otp, purpose = 'verification') {
-    // Check if email credentials are configured
-    if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'your-email@gmail.com' || 
-        !process.env.EMAIL_PASS || process.env.EMAIL_PASS === 'your-app-password') {
-      console.log('⚠️  EMAIL NOT CONFIGURED - EMAIL OTP:', {
+    // Check if Resend is configured
+    if (!this.resend || !process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'your-resend-api-key') {
+      console.log('⚠️  RESEND NOT CONFIGURED - EMAIL OTP:', {
         email: email,
         otp: otp,
         purpose: purpose,
-        message: 'Please configure EMAIL_USER and EMAIL_PASS in .env file'
+        message: 'Please configure RESEND_API_KEY in .env file'
       });
-      return { 
-        success: false, 
+      return {
+        success: false,
         message: 'Email service not configured - check console for OTP',
         debug: `Email OTP for ${email}: ${otp}`
       };
     }
 
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: `YAATRA - Your OTP for ${purpose}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2>YAATRA - OTP Verification</h2>
-          <p>Your OTP for ${purpose} is:</p>
-          <div style="background-color: #f0f0f0; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 3px; margin: 20px 0;">
-            ${otp}
-          </div>
-          <p>This OTP will expire in 5 minutes.</p>
-          <p>If you didn't request this OTP, please ignore this email.</p>
-        </div>
-      `
-    };
-
     try {
-      await this.emailTransporter.sendMail(mailOptions);
+      const result = await this.resend.emails.send({
+        from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+        to: email,
+        subject: `YAATRA - Your OTP for ${purpose}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2>YAATRA - OTP Verification</h2>
+            <p>Your OTP for ${purpose} is:</p>
+            <div style="background-color: #f0f0f0; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 3px; margin: 20px 0;">
+              ${otp}
+            </div>
+            <p>This OTP will expire in 5 minutes.</p>
+            <p>If you didn't request this OTP, please ignore this email.</p>
+          </div>
+        `
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+
       return { success: true, message: 'OTP sent to email successfully' };
     } catch (error) {
       console.error('❌ Email OTP send error:', error.message);
@@ -72,8 +72,8 @@ class OTPService {
         purpose: purpose,
         error: error.message
       });
-      return { 
-        success: false, 
+      return {
+        success: false,
         message: 'Failed to send email OTP - check console for OTP',
         debug: `Email OTP for ${email}: ${otp}`
       };

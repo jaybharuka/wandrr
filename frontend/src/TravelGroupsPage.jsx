@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "./UserContext";
 import BottomNav from "./BottomNav";
 
+const API_BASE_URL = "https://wandrr-api.onrender.com";
+
 export default function TravelGroupsPage({ selectedLocation: initialLocation }) {
   const navigate = useNavigate();
   const { userId } = useUser();
@@ -87,7 +89,7 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
     if (!groupName.trim() || !selectedLocation) return;
     setCreating(true);
     try {
-      const res = await fetch("/api/groups", {
+      const res = await fetch(`${API_BASE_URL}/api/groups`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, name: groupName, destination: selectedLocation, description: groupDesc, isPrivate, maxMembers }),

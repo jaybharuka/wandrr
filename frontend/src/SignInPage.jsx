@@ -2,6 +2,8 @@ import React, { useState, useRef } from "react";
 import { useUser } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 
+const API_BASE_URL = "https://wandrr-api.onrender.com";
+
 export default function SignInPage() {
   const [step, setStep] = useState(1); // 1: Enter phone/email, 2: Verify OTP
   const [phone, setPhone] = useState("");
@@ -40,7 +42,7 @@ export default function SignInPage() {
     }
 
     try {
-      const res = await fetch("/api/auth/signin/initiate", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/signin/initiate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: phone || undefined, email: email || undefined }),
@@ -81,7 +83,7 @@ export default function SignInPage() {
     }
 
     try {
-      const res = await fetch("/api/auth/signin/verify", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/signin/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, otp, otpType }),
@@ -108,7 +110,7 @@ export default function SignInPage() {
   const handleResendOTP = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/signin/initiate", {
+      const res = await fetch(`${API_BASE_URL}/api/auth/signin/initiate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone: phone || undefined, email: email || undefined }),
