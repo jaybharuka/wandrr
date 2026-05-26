@@ -5,16 +5,17 @@ const db = require('../config/db');
 // POST /api/travel-posts - Create a new travel post
 router.post('/', (req, res) => {
   const { userId, userName, travellingFrom, travellingTo, travelDate } = req.body;
-  
+
   if (!userId || !userName || !travellingFrom || !travellingTo || !travelDate) {
-    return res.status(400).json({ 
-      error: 'All fields are required: userId, userName, travellingFrom, travellingTo, and travelDate' 
+    return res.status(400).json({
+      error: 'All fields are required: userId, userName, travellingFrom, travellingTo, and travelDate'
     });
   }
 
   const query = `
     INSERT INTO travel_posts (user_id, user_name, travelling_from, travelling_to, travel_date)
-    VALUES (?, ?, ?, ?, ?)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING id
   `;
 
   db.query(query, [userId, userName, travellingFrom, travellingTo, travelDate], (err, result) => {
@@ -22,19 +23,13 @@ router.post('/', (req, res) => {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Failed to create travel post' });
     }
-    
-    res.status(201).json({ 
+
+    const newId = result.rows[0].id;
+    res.status(201).json({
       success: true,
       message: 'Travel post created successfully',
-      postId: result.insertId,
-      data: {
-        id: result.insertId,
-        userId,
-        userName,
-        travellingFrom,
-        travellingTo,
-        travelDate
-      }
+      postId: newId,
+      data: { id: newId, userId, userName, travellingFrom, travellingTo, travelDate }
     });
   });
 });
@@ -42,9 +37,9 @@ router.post('/', (req, res) => {
 // GET /api/travel-posts - Get all travel posts with user info
 router.get('/', (req, res) => {
   const { destination, excludeUserId, userId } = req.query;
-  
+
   let query = `
-    SELECT 
+    SELECT
       tp.id,
       tp.user_id,
       tp.user_name,
@@ -53,79 +48,69 @@ router.get('/', (req, res) => {
       tp.travel_date,
       tp.created_at,
       tp.updated_at,
-      u.phone as user_phone,
       u.email as user_email
     FROM travel_posts tp
     JOIN users u ON tp.user_id = u.id
   `;
-  
+
   const params = [];
   const conditions = [];
-  
+  let paramIndex = 1;
+
   if (destination) {
-    conditions.push('tp.travelling_to = ?');
+    conditions.push(`tp.travelling_to = $${paramIndex++}`);
     params.push(destination);
   }
-  
+
   if (excludeUserId) {
-    conditions.push('tp.user_id != ?');
+    conditions.push(`tp.user_id != $${paramIndex++}`);
     params.push(excludeUserId);
   }
-  
-  // Filter by specific userId (for "My Posts" functionality)
+
   if (userId) {
-    conditions.push('tp.user_id = ?');
+    conditions.push(`tp.user_id = $${paramIndex++}`);
     params.push(userId);
   }
-  
+
   if (conditions.length > 0) {
     query += ' WHERE ' + conditions.join(' AND ');
   }
 
   query += ' ORDER BY tp.created_at DESC';
 
-  db.query(query, params, (err, results) => {
+  db.query(query, params, (err, result) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Failed to fetch travel posts' });
     }
-    
-    // For userId queries, return the results directly as an array
+
     if (userId) {
-      return res.json(results);
+      return res.json(result.rows);
     }
-    
-    // Parse interests JSON for each post (for non-userId queries)
-    const postsWithParsedInterests = results.map(post => ({
-      ...post,
-      interests: post.interests ? JSON.parse(post.interests) : []
-    }));
-    
-    res.json({ posts: postsWithParsedInterests });
+
+    res.json({ posts: result.rows });
   });
 });
 
 // GET /api/travel-posts/user/:userId - Get posts by specific user
 router.get('/user/:userId', (req, res) => {
   const { userId } = req.params;
-  
+
   const query = `
-    SELECT 
-      tp.*,
-      u.name as user_name
+    SELECT tp.*, u.name as user_name
     FROM travel_posts tp
     JOIN users u ON tp.user_id = u.id
-    WHERE tp.user_id = ?
+    WHERE tp.user_id = $1
     ORDER BY tp.created_at DESC
   `;
 
-  db.query(query, [userId], (err, results) => {
+  db.query(query, [userId], (err, result) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Failed to fetch user posts' });
     }
-    
-    res.json({ posts: results });
+
+    res.json({ posts: result.rows });
   });
 });
 
@@ -138,13 +123,13 @@ router.delete('/:id', (req, res) => {
     return res.status(400).json({ error: 'userId is required.' });
   }
 
-  const query = 'DELETE FROM travel_posts WHERE id = ? AND user_id = ?';
+  const query = 'DELETE FROM travel_posts WHERE id = $1 AND user_id = $2';
   db.query(query, [id, userId], (err, result) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Failed to delete travel post.' });
     }
-    if (result.affectedRows === 0) {
+    if (result.rowCount === 0) {
       return res.status(404).json({ error: 'Post not found or you do not have permission to delete it.' });
     }
     res.json({ success: true, message: 'Travel post deleted successfully.' });

@@ -5,38 +5,37 @@ const db = require('../config/db');
 // GET /api/users/:id - Get user by ID
 router.get('/:id', (req, res) => {
   const userId = req.params.id;
-  
+
   if (!userId || isNaN(userId)) {
     return res.status(400).json({ error: 'Valid User ID is required' });
   }
 
-  const query = 'SELECT id, name, phone, email, email_verified, is_verified FROM users WHERE id = ?';
-  
-  db.query(query, [parseInt(userId)], (err, results) => {
+  const query = 'SELECT id, name, email, username FROM users WHERE id = $1';
+
+  db.query(query, [parseInt(userId)], (err, result) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Failed to fetch user data' });
     }
-    
-    if (results.length === 0) {
+
+    if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
-    
-    const user = results[0];
+
+    const user = result.rows[0];
     res.json({
       id: user.id,
       name: user.name,
-      phone: user.phone,
       email: user.email,
-      isVerified: user.is_verified
+      username: user.username
     });
   });
 });
 
-// PUT /api/users/:id - Update user name and phone
+// PUT /api/users/:id - Update user name
 router.put('/:id', (req, res) => {
   const userId = req.params.id;
-  const { name, phone } = req.body;
+  const { name } = req.body;
 
   if (!userId || isNaN(userId)) {
     return res.status(400).json({ error: 'Valid User ID is required' });
@@ -46,16 +45,16 @@ router.put('/:id', (req, res) => {
     return res.status(400).json({ error: 'Name is required' });
   }
 
-  const query = 'UPDATE users SET name = ?, phone = ? WHERE id = ?';
-  db.query(query, [name.trim(), phone || null, parseInt(userId)], (err, result) => {
+  const query = 'UPDATE users SET name = $1 WHERE id = $2 RETURNING id, name, email, username';
+  db.query(query, [name.trim(), parseInt(userId)], (err, result) => {
     if (err) {
       console.error('Database error:', err);
       return res.status(500).json({ error: 'Failed to update profile' });
     }
-    if (result.affectedRows === 0) {
+    if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User not found' });
     }
-    res.json({ success: true, message: 'Profile updated successfully' });
+    res.json({ success: true, message: 'Profile updated successfully', user: result.rows[0] });
   });
 });
 

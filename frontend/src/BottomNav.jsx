@@ -1,5 +1,7 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useUser } from "./UserContext";
+import { Sun, Moon } from "lucide-react";
 
 const NAV_ITEMS = [
   {
@@ -52,10 +54,11 @@ const NAV_ITEMS = [
 export default function BottomNav() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { darkMode, toggleDarkMode } = useUser();
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-100 sm:hidden h-16"
+      className="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-[#1e1e1e] border-t border-gray-100 dark:border-[#2a2a2a] sm:hidden h-16"
       style={{ fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="flex items-stretch h-full">
@@ -66,7 +69,7 @@ export default function BottomNav() {
               key={item.path}
               onClick={() => navigate(item.path)}
               className={`flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-colors ${
-                active ? "" : "text-gray-400 hover:text-gray-600"
+                active ? "" : "text-gray-400 dark:text-[#737373] hover:text-gray-600 dark:hover:text-[#a3a3a3]"
               }`}
               style={active ? { color: "#FF6B35" } : {}}
             >
@@ -76,6 +79,14 @@ export default function BottomNav() {
             </button>
           );
         })}
+        {/* Dark mode toggle */}
+        <button
+          onClick={toggleDarkMode}
+          className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 text-gray-400 dark:text-[#737373] hover:text-gray-600 dark:hover:text-[#a3a3a3] transition-colors"
+        >
+          {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          <span className="text-[10px] font-medium">{darkMode ? "Light" : "Dark"}</span>
+        </button>
       </div>
     </nav>
   );

@@ -1,9 +1,7 @@
-import express from "express";
-import db from "../config/db.js";
-
+const express = require("express");
 const router = express.Router();
+const db = require("../config/db");
 
-// Auto-create messages table if it doesn't exist (PostgreSQL syntax)
 db.query(`
   CREATE TABLE IF NOT EXISTS messages (
     id SERIAL PRIMARY KEY,
@@ -21,7 +19,6 @@ db.query(`CREATE INDEX IF NOT EXISTS idx_room ON messages(room_id)`, (err) => {
   if (err) console.error("Failed to create index:", err.message);
 });
 
-// GET /api/messages/:roomId — fetch message history
 router.get("/:roomId", (req, res) => {
   const { roomId } = req.params;
   const limit = parseInt(req.query.limit) || 50;
@@ -36,7 +33,6 @@ router.get("/:roomId", (req, res) => {
   );
 });
 
-// POST /api/messages — persist a message
 router.post("/", (req, res) => {
   const { roomId, senderId, senderName, content } = req.body;
   if (!roomId || !senderId || !senderName || !content) {
@@ -64,4 +60,4 @@ router.post("/", (req, res) => {
   );
 });
 
-export default router;
+module.exports = router;

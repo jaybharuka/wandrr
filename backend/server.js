@@ -1,25 +1,36 @@
-import express from 'express';
-import cors from 'cors';
-import http from 'http';
-import { Server } from 'socket.io';
-import dotenv from 'dotenv';
-import db from './config/db.js';
-
-dotenv.config(); // Load environment variables
+const express = require("express");
+const cors = require('cors');
+const http = require('http');
+const { Server } = require('socket.io');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 const app = express();
 const httpServer = http.createServer(app);
 const PORT = process.env.PORT || 5000;
+const db = require('./config/db');
 
 const io = new Server(httpServer, {
   cors: { origin: "*", methods: ["GET", "POST"] }
 });
 
 app.use(cors());
-app.use(express.json()); // For parsing JSON bodies, needed for POST requests
+app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Wandrr Backend is running 🚀");
+});
+
+// Run missing-column migrations on startup
+db.query(`
+  ALTER TABLE bookings ADD COLUMN IF NOT EXISTS flight_details TEXT;
+  ALTER TABLE bookings ADD COLUMN IF NOT EXISTS status VARCHAR(20) DEFAULT 'active';
+  ALTER TABLE bookings ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+  ALTER TABLE bookings ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+  ALTER TABLE users ADD COLUMN IF NOT EXISTS username VARCHAR(100) UNIQUE;
+  ALTER TABLE users ADD COLUMN IF NOT EXISTS pin VARCHAR(255);
+`, (err) => {
+  if (err) console.error('Migration warning:', err.message);
 });
 
 // Socket.io chat
@@ -41,12 +52,11 @@ io.on('connection', (socket) => {
       created_at: new Date(),
     };
 
-    // Persist to DB
     db.query(
-      'INSERT INTO messages (room_id, sender_id, sender_name, content) VALUES (?, ?, ?, ?)',
+      'INSERT INTO messages (room_id, sender_id, sender_name, content) VALUES ($1, $2, $3, $4)',
       [roomId, senderId, senderName, content],
       (err, result) => {
-        if (!err) message.id = result.insertId;
+        if (!err) message.id = result.rows[0]?.id;
       }
     );
 
@@ -56,41 +66,45 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {});
 });
 
-import authRoutes from './routes/auth.js';
+const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
 
-import bookingsRoutes from './routes/bookings.js';
+const bookingsRoutes = require('./routes/bookings');
 app.use('/api/bookings', bookingsRoutes);
 
-import travelPostsRoutes from './routes/travelPosts.js';
+const travelPostsRoutes = require('./routes/travelPosts');
 app.use('/api/travel-posts', travelPostsRoutes);
 
-import usersRoutes from './routes/users.js';
+const usersRoutes = require('./routes/users');
 app.use('/api/users', usersRoutes);
 
-import connectionRequestsRoutes from './routes/connectionRequests.js';
+const connectionRequestsRoutes = require('./routes/connectionRequests');
 app.use('/api/connection-requests', connectionRequestsRoutes);
 
-import hotelBookingsRoutes from './routes/hotelBookings.js';
+const hotelBookingsRoutes = require('./routes/hotelBookings');
 app.use('/api/hotelBookings', hotelBookingsRoutes);
 
-import groupsRoutes from './routes/groups.js';
+const groupsRoutes = require('./routes/groups');
 app.use('/api/groups', groupsRoutes);
 
-import flightsRoutes from './routes/flights.js';
+const flightsRoutes = require('./routes/flights');
 app.use('/api/flights', flightsRoutes);
 
-import hotelsRoutes from './routes/hotels.js';
+const hotelsRoutes = require('./routes/hotels');
 app.use('/api/hotels', hotelsRoutes);
 
-import aiRoutes from './routes/ai.js';
+const aiRoutes = require('./routes/ai');
 app.use('/api/ai', aiRoutes);
 
-import messagesRoutes from './routes/messages.js';
+const messagesRoutes = require('./routes/messages');
 app.use('/api/messages', messagesRoutes);
+
+// Global error handler — must be last, after all routes
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong' });
+});
 
 httpServer.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-
-

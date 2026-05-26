@@ -1,34 +1,28 @@
-import { Resend } from 'resend';
-import { authenticator } from 'otplib';
-import crypto from 'crypto';
+const { Resend } = require('resend');
+const { authenticator } = require('otplib');
+const crypto = require('crypto');
 
 class OTPService {
   constructor() {
-    // Initialize Resend with API key
     if (process.env.RESEND_API_KEY && process.env.RESEND_API_KEY !== 'your-resend-api-key') {
       this.resend = new Resend(process.env.RESEND_API_KEY);
       console.log('✅ Resend initialized with API key:', process.env.RESEND_API_KEY.substring(0, 10) + '...');
     } else {
       this.resend = null;
-      console.log('⚠️  Resend API key not configured:', process.env.RESEND_API_KEY);
     }
   }
 
-  // Generate 6-digit OTP
   generateOTP() {
     return Math.floor(100000 + Math.random() * 900000).toString();
   }
 
-  // Get OTP expiry time (5 minutes from now)
   getOTPExpiry() {
     const now = new Date();
     now.setMinutes(now.getMinutes() + 5);
     return now;
   }
 
-  // Send OTP via email
   async sendEmailOTP(email, otp, purpose = 'verification') {
-    // Check if Resend is configured
     if (!this.resend || !process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'your-resend-api-key') {
       console.log('⚠️  RESEND NOT CONFIGURED - EMAIL OTP:', {
         email: email,
@@ -38,7 +32,7 @@ class OTPService {
       });
       return {
         success: false,
-        message: 'Email service not configured - check console for OTP',
+        message: 'Email service not configured',
         debug: `Email OTP for ${email}: ${otp}`
       };
     }
@@ -72,7 +66,6 @@ class OTPService {
       return { success: true, message: 'OTP sent to email successfully' };
     } catch (error) {
       console.error('❌ Email OTP send error:', error.message);
-      console.error('❌ Full error:', error);
       console.log('📧 EMAIL OTP (sent to console due to error):', {
         email: email,
         otp: otp,
@@ -81,49 +74,42 @@ class OTPService {
       });
       return {
         success: false,
-        message: 'Failed to send email OTP - check console for OTP',
+        message: 'Failed to send email OTP',
         debug: `Email OTP for ${email}: ${otp}`
       };
     }
   }
 
-  // Send OTP via SMS (placeholder - integrate with SMS service like Twilio)
   async sendPhoneOTP(phone, otp, purpose = 'verification') {
-    // TODO: Integrate with SMS service like Twilio
-    // For now, we'll just log the OTP (in production, replace with actual SMS service)
     console.log('📱 PHONE OTP (SMS Service Not Configured):', {
       phone: phone,
       otp: otp,
       purpose: purpose,
-      message: 'SMS integration pending - Using console output for testing'
+      message: 'SMS integration pending'
     });
-    
-    // Simulate SMS sending delay
+
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve({ 
-          success: true, 
-          message: 'OTP logged to console (SMS service not configured)',
-          note: 'SMS integration pending - check console for OTP',
+        resolve({
+          success: true,
+          message: 'OTP logged to console',
           debug: `Phone OTP for ${phone}: ${otp}`
         });
       }, 1000);
     });
   }
 
-  // Verify if OTP is valid and not expired
   isOTPValid(storedOTP, providedOTP, expiryTime) {
     if (!storedOTP || !providedOTP) {
       return false;
     }
-    
+
     const now = new Date();
     const expiry = new Date(expiryTime);
-    
+
     return storedOTP === providedOTP && now <= expiry;
   }
 
-  // Clear OTP after successful verification
   clearOTP(type) {
     if (type === 'email') {
       return {
@@ -140,4 +126,4 @@ class OTPService {
   }
 }
 
-export default new OTPService();
+module.exports = new OTPService();

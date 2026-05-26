@@ -261,7 +261,7 @@ export default function TinderLikePage() {
     }
   };
 
-  const INPUT_CLS = "w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-400 transition-colors text-base";
+  const INPUT_CLS = "w-full px-4 py-3 bg-white dark:bg-[#2a2a2a] border border-gray-300 dark:border-[#333333] rounded-xl text-gray-900 dark:text-[#f5f5f5] placeholder-gray-400 dark:placeholder-[#737373] focus:outline-none focus:ring-2 focus:ring-gray-300 dark:focus:ring-[#333333] focus:border-gray-400 transition-colors text-base";
 
   function Avatar({ name, size = "w-10 h-10", textSize = "text-sm" }) {
     const COLORS = [
@@ -279,27 +279,27 @@ export default function TinderLikePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white pb-20 sm:pb-0" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="min-h-screen bg-white dark:bg-[#0f0f0f] pb-20 sm:pb-0" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       {/* Nav */}
-      <nav className="border-b border-gray-100 px-4 sm:px-10 py-4 sm:py-5 flex items-center justify-between">
-        <span style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.75rem", color: "#000", letterSpacing: "-0.02em" }}>
+      <nav className="border-b border-gray-100 dark:border-[#2a2a2a] px-4 sm:px-10 py-4 sm:py-5 flex items-center justify-between">
+        <span style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.75rem", letterSpacing: "-0.02em" }} className="text-gray-900 dark:text-[#f5f5f5]">
           Wandrr<sup style={{ fontSize: "0.5em", verticalAlign: "super" }}>®</sup>
         </span>
-        <button onClick={() => navigate(-1)} className="text-sm text-gray-500 hover:text-gray-900 transition-colors">← Back</button>
+        <button onClick={() => navigate(-1)} className="text-sm text-gray-500 dark:text-[#a3a3a3] hover:text-gray-900 dark:hover:text-[#f5f5f5] transition-colors">← Back</button>
       </nav>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "clamp(2rem, 5vw, 3rem)", color: "#000", letterSpacing: "-1.5px", lineHeight: 1 }}>
+          <h1 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "clamp(2rem, 5vw, 3rem)", letterSpacing: "-1.5px", lineHeight: 1 }} className="text-gray-900 dark:text-[#f5f5f5]">
             Solo Travellers
           </h1>
-          <p className="text-gray-500 text-sm mt-2">Connect with fellow travellers on the same route</p>
+          <p className="text-gray-500 dark:text-[#a3a3a3] text-sm mt-2">Connect with fellow travellers on the same route</p>
         </div>
 
         {/* Tabs */}
         <div className="flex justify-center mb-8">
-          <div className="flex flex-wrap bg-gray-100 rounded-xl p-1 gap-1 justify-center">
+          <div className="flex flex-wrap bg-gray-100 dark:bg-[#2a2a2a] rounded-xl p-1 gap-1 justify-center">
             {[
               { key: "create",  label: "Create Post",       fn: handleCreatePost },
               { key: "explore", label: "Explore Travellers", fn: handleExploreTravellers },
@@ -307,7 +307,7 @@ export default function TinderLikePage() {
             ].map(t => (
               <button key={t.key} onClick={t.fn}
                 className={`px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                  activeTab === t.key ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+                  activeTab === t.key ? "bg-white dark:bg-[#1e1e1e] text-gray-900 dark:text-[#f5f5f5] shadow-sm" : "text-gray-500 dark:text-[#a3a3a3] hover:text-gray-700 dark:hover:text-[#d4d4d4]"
                 }`}>
                 {t.label}
               </button>
@@ -317,38 +317,38 @@ export default function TinderLikePage() {
 
         {/* CREATE */}
         {activeTab === "create" && (
-          <div className="bg-white border border-gray-200 rounded-2xl p-5 sm:p-8 max-w-2xl mx-auto">
-            <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.5rem", color: "#000" }} className="mb-1">Create Travel Post</h2>
-            <p className="text-gray-500 text-sm mb-6">Share your travel plans and find companions!</p>
+          <div className="bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-2xl p-5 sm:p-8 max-w-2xl mx-auto">
+            <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.5rem" }} className="text-gray-900 dark:text-[#f5f5f5] mb-1">Create Travel Post</h2>
+            <p className="text-gray-500 dark:text-[#a3a3a3] text-sm mb-6">Share your travel plans and find companions!</p>
 
             <form onSubmit={handleSubmitPost} className="space-y-5">
               <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">User ID</label>
+                <label className="block text-gray-700 dark:text-[#d4d4d4] text-sm font-medium mb-2">User ID</label>
                 <input type="text" value={userDataLoading ? "Loading…" : userId} readOnly
-                  className={INPUT_CLS + " bg-gray-50 cursor-not-allowed opacity-75"} />
-                <p className="text-gray-400 text-xs mt-1">Your unique user ID (cannot be changed)</p>
+                  className={INPUT_CLS + " bg-gray-50 dark:bg-[#1a1a1a] cursor-not-allowed opacity-75"} />
+                <p className="text-gray-400 dark:text-[#737373] text-xs mt-1">Your unique user ID (cannot be changed)</p>
               </div>
 
               <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">Name</label>
+                <label className="block text-gray-700 dark:text-[#d4d4d4] text-sm font-medium mb-2">Name</label>
                 <input type="text" value={userDataLoading ? "Loading…" : userName} readOnly
-                  className={INPUT_CLS + " bg-gray-50 cursor-not-allowed opacity-75"} />
-                <p className="text-gray-400 text-xs mt-1">
+                  className={INPUT_CLS + " bg-gray-50 dark:bg-[#1a1a1a] cursor-not-allowed opacity-75"} />
+                <p className="text-gray-400 dark:text-[#737373] text-xs mt-1">
                   {userDataError ? <span className="text-red-500">{userDataError}</span> : "Name from your profile (cannot be changed)"}
                 </p>
               </div>
 
               <div className="relative">
-                <label className="block text-gray-700 text-sm font-medium mb-2">Travelling From</label>
+                <label className="block text-gray-700 dark:text-[#d4d4d4] text-sm font-medium mb-2">Travelling From</label>
                 <input type="text" value={fromSearch}
                   onChange={e => { setFromSearch(e.target.value); setShowFromDropdown(true); }}
                   onFocus={() => setShowFromDropdown(true)}
                   className={INPUT_CLS} placeholder="Search departure city…" required />
                 {showFromDropdown && filteredFromCities.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-56 overflow-y-auto">
+                  <div className="absolute z-10 w-full mt-1 bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-xl shadow-lg max-h-56 overflow-y-auto">
                     {filteredFromCities.slice(0, 10).map((city, i) => (
                       <button key={i} type="button" onClick={() => handleFromCitySelect(city)}
-                        className="w-full text-left px-4 py-2.5 text-gray-700 hover:bg-gray-50 text-sm first:rounded-t-xl last:rounded-b-xl transition-colors">
+                        className="w-full text-left px-4 py-2.5 text-gray-700 dark:text-[#d4d4d4] hover:bg-gray-50 dark:hover:bg-[#2a2a2a] text-sm first:rounded-t-xl last:rounded-b-xl transition-colors">
                         {city}
                       </button>
                     ))}
@@ -357,16 +357,16 @@ export default function TinderLikePage() {
               </div>
 
               <div className="relative">
-                <label className="block text-gray-700 text-sm font-medium mb-2">Travelling To</label>
+                <label className="block text-gray-700 dark:text-[#d4d4d4] text-sm font-medium mb-2">Travelling To</label>
                 <input type="text" value={toSearch}
                   onChange={e => { setToSearch(e.target.value); setShowToDropdown(true); }}
                   onFocus={() => setShowToDropdown(true)}
                   className={INPUT_CLS} placeholder="Search destination city…" required />
                 {showToDropdown && filteredToCities.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-xl shadow-lg max-h-56 overflow-y-auto">
+                  <div className="absolute z-10 w-full mt-1 bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-xl shadow-lg max-h-56 overflow-y-auto">
                     {filteredToCities.slice(0, 10).map((city, i) => (
                       <button key={i} type="button" onClick={() => handleToCitySelect(city)}
-                        className="w-full text-left px-4 py-2.5 text-gray-700 hover:bg-gray-50 text-sm first:rounded-t-xl last:rounded-b-xl transition-colors">
+                        className="w-full text-left px-4 py-2.5 text-gray-700 dark:text-[#d4d4d4] hover:bg-gray-50 dark:hover:bg-[#2a2a2a] text-sm first:rounded-t-xl last:rounded-b-xl transition-colors">
                         {city}
                       </button>
                     ))}
@@ -375,7 +375,7 @@ export default function TinderLikePage() {
               </div>
 
               <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">Travel Date</label>
+                <label className="block text-gray-700 dark:text-[#d4d4d4] text-sm font-medium mb-2">Travel Date</label>
                 <input type="date" value={travelDate} onChange={e => setTravelDate(e.target.value)}
                   min={new Date().toISOString().split("T")[0]} className={INPUT_CLS} required />
               </div>
@@ -391,43 +391,43 @@ export default function TinderLikePage() {
         {activeTab === "explore" && (
           <div className="max-w-md mx-auto">
             {(!Array.isArray(explorePosts) || explorePosts.length === 0) ? (
-              <div className="text-center border border-dashed border-gray-200 rounded-xl py-16 px-8">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-12 h-12 mx-auto mb-4 text-gray-300"><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253" /></svg>
-                <p className="text-gray-700 font-medium mb-1">No travel posts yet</p>
-                <p className="text-gray-400 text-sm mb-5">Be the first to post your travel plans!</p>
-                <button onClick={loadExplorePosts} className="text-sm bg-white border border-gray-200 hover:border-gray-400 text-gray-700 px-4 py-2 rounded-lg transition-colors">Refresh</button>
+              <div className="text-center border border-dashed border-gray-200 dark:border-[#2a2a2a] rounded-xl py-16 px-8">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-[#737373]"><path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253" /></svg>
+                <p className="text-gray-700 dark:text-[#f5f5f5] font-medium mb-1">No travel posts yet</p>
+                <p className="text-gray-400 dark:text-[#737373] text-sm mb-5">Be the first to post your travel plans!</p>
+                <button onClick={loadExplorePosts} className="text-sm bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] hover:border-gray-400 dark:hover:border-[#333333] text-gray-700 dark:text-[#d4d4d4] px-4 py-2 rounded-lg transition-colors">Refresh</button>
               </div>
             ) : cardIndex >= explorePosts.length ? (
-              <div className="text-center border border-dashed border-gray-200 rounded-xl py-16 px-8">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-12 h-12 mx-auto mb-4 text-gray-300"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                <p className="text-gray-700 font-medium mb-1">You've seen everyone!</p>
-                <p className="text-gray-400 text-sm mb-5">Check back later for new travellers.</p>
+              <div className="text-center border border-dashed border-gray-200 dark:border-[#2a2a2a] rounded-xl py-16 px-8">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-[#737373]"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                <p className="text-gray-700 dark:text-[#f5f5f5] font-medium mb-1">You've seen everyone!</p>
+                <p className="text-gray-400 dark:text-[#737373] text-sm mb-5">Check back later for new travellers.</p>
                 <button onClick={() => { setCardIndex(0); loadExplorePosts(); }} className="btn-accent px-5 py-2.5 rounded-xl text-sm font-medium">Start Over</button>
               </div>
             ) : (
               <div>
                 {/* Progress */}
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-gray-400 text-xs">{cardIndex + 1} / {explorePosts.length}</p>
-                  <button onClick={loadExplorePosts} className="text-xs text-gray-400 hover:text-gray-700 border border-gray-200 hover:border-gray-300 px-3 py-1 rounded-lg transition-colors">Refresh</button>
+                  <p className="text-gray-400 dark:text-[#737373] text-xs">{cardIndex + 1} / {explorePosts.length}</p>
+                  <button onClick={loadExplorePosts} className="text-xs text-gray-400 dark:text-[#737373] hover:text-gray-700 dark:hover:text-[#d4d4d4] border border-gray-200 dark:border-[#2a2a2a] hover:border-gray-300 dark:hover:border-[#333333] px-3 py-1 rounded-lg transition-colors">Refresh</button>
                 </div>
 
                 {/* Stacked cards */}
                 <div className="relative" style={{ height: "420px" }}>
                   {/* Ghost card 2 (back) */}
                   {cardIndex + 2 < explorePosts.length && (
-                    <div className="absolute inset-x-4 top-4 bottom-0 bg-gray-100 border border-gray-200 rounded-2xl" style={{ transform: "scale(0.92)", transformOrigin: "top center", zIndex: 1 }} />
+                    <div className="absolute inset-x-4 top-4 bottom-0 bg-gray-100 dark:bg-[#2a2a2a] border border-gray-200 dark:border-[#333333] rounded-2xl" style={{ transform: "scale(0.92)", transformOrigin: "top center", zIndex: 1 }} />
                   )}
                   {/* Ghost card 1 (middle) */}
                   {cardIndex + 1 < explorePosts.length && (
-                    <div className="absolute inset-x-2 top-2 bottom-0 bg-gray-50 border border-gray-200 rounded-2xl shadow-sm" style={{ transform: "scale(0.96)", transformOrigin: "top center", zIndex: 2 }} />
+                    <div className="absolute inset-x-2 top-2 bottom-0 bg-gray-50 dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-2xl shadow-sm dark:shadow-none" style={{ transform: "scale(0.96)", transformOrigin: "top center", zIndex: 2 }} />
                   )}
                   {/* Active card */}
                   {(() => {
                     const post = explorePosts[cardIndex];
                     return (
                       <div
-                        className="absolute inset-0 bg-white border border-gray-200 rounded-2xl shadow-md flex flex-col overflow-hidden transition-all duration-300"
+                        className="absolute inset-0 bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-2xl shadow-md dark:shadow-none flex flex-col overflow-hidden transition-all duration-300"
                         style={{ zIndex: 3 }}
                       >
                         {/* LIKE / PASS overlay labels on button hover are handled by the buttons */}
@@ -436,8 +436,8 @@ export default function TinderLikePage() {
                           <div className="flex items-center gap-3 mb-6">
                             <Avatar name={post.user_name} size="w-11 h-11" />
                             <div>
-                              <p className="text-gray-900 font-semibold">{post.user_name}</p>
-                              <p className="text-gray-400 text-xs">Looking for companions</p>
+                              <p className="text-gray-900 dark:text-[#f5f5f5] font-semibold">{post.user_name}</p>
+                              <p className="text-gray-400 dark:text-[#737373] text-xs">Looking for companions</p>
                             </div>
                           </div>
 
@@ -445,13 +445,13 @@ export default function TinderLikePage() {
                           <div className="w-full text-center mb-5">
                             <div className="flex items-center justify-center gap-4">
                               <div className="text-center">
-                                <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">From</p>
-                                <p className="font-semibold text-gray-900" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.6rem", lineHeight: 1.1 }}>{post.travelling_from}</p>
+                                <p className="text-gray-400 dark:text-[#737373] text-xs uppercase tracking-widest mb-1">From</p>
+                                <p className="font-semibold text-gray-900 dark:text-[#f5f5f5]" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.6rem", lineHeight: 1.1 }}>{post.travelling_from}</p>
                               </div>
                               <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B35" strokeWidth="1.8" className="w-6 h-6 shrink-0"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12h12m0 0l-4-4m4 4l-4 4" /></svg>
                               <div className="text-center">
-                                <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">To</p>
-                                <p className="font-semibold text-gray-900" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.6rem", lineHeight: 1.1 }}>{post.travelling_to}</p>
+                                <p className="text-gray-400 dark:text-[#737373] text-xs uppercase tracking-widest mb-1">To</p>
+                                <p className="font-semibold text-gray-900 dark:text-[#f5f5f5]" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.6rem", lineHeight: 1.1 }}>{post.travelling_to}</p>
                               </div>
                             </div>
                           </div>
@@ -467,14 +467,14 @@ export default function TinderLikePage() {
                         <div className="px-4 pb-4 sm:px-6 sm:pb-6 flex gap-3">
                           <button
                             onClick={() => setCardIndex(i => i + 1)}
-                            className="group flex-1 flex items-center justify-center gap-2 bg-white border-2 border-gray-200 hover:border-red-300 hover:bg-red-50 text-gray-500 hover:text-red-500 py-3 rounded-xl text-sm font-semibold transition-all"
+                            className="group flex-1 flex items-center justify-center gap-2 bg-white dark:bg-[#1e1e1e] border-2 border-gray-200 dark:border-[#2a2a2a] hover:border-red-300 dark:hover:border-red-800 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-500 dark:text-[#a3a3a3] hover:text-red-500 py-3 rounded-xl text-sm font-semibold transition-all"
                           >
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                             Pass
                           </button>
                           <button
                             onClick={() => setContactPost(post)}
-                            className="flex-1 flex items-center justify-center gap-2 bg-white border border-gray-200 hover:border-gray-400 text-gray-600 py-3 rounded-xl text-sm font-medium transition-all"
+                            className="flex-1 flex items-center justify-center gap-2 bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] hover:border-gray-400 dark:hover:border-[#333333] text-gray-600 dark:text-[#d4d4d4] py-3 rounded-xl text-sm font-medium transition-all"
                           >
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" /></svg>
                             Message
@@ -501,44 +501,44 @@ export default function TinderLikePage() {
         {activeTab === "myposts" && (
           <div>
             {(!Array.isArray(myPosts) || myPosts.length === 0) ? (
-              <div className="text-center border border-dashed border-gray-200 rounded-xl py-16 px-8">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-12 h-12 mx-auto mb-4 text-gray-300"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
-                <p className="text-gray-700 font-medium mb-1">No posts yet</p>
-                <p className="text-gray-400 text-sm mb-5">Create your first travel post to find companions on your journey.</p>
+              <div className="text-center border border-dashed border-gray-200 dark:border-[#2a2a2a] rounded-xl py-16 px-8">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-12 h-12 mx-auto mb-4 text-gray-300 dark:text-[#737373]"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
+                <p className="text-gray-700 dark:text-[#f5f5f5] font-medium mb-1">No posts yet</p>
+                <p className="text-gray-400 dark:text-[#737373] text-sm mb-5">Create your first travel post to find companions on your journey.</p>
                 <button onClick={() => handleCreatePost()} className="btn-accent px-5 h-11 rounded-xl text-sm font-medium">
                   Create Post
                 </button>
               </div>
             ) : (
               <div className="space-y-3 max-w-3xl mx-auto">
-                <p className="text-gray-500 text-sm">{myPosts.length} post{myPosts.length !== 1 ? "s" : ""}</p>
+                <p className="text-gray-500 dark:text-[#a3a3a3] text-sm">{myPosts.length} post{myPosts.length !== 1 ? "s" : ""}</p>
                 {myPosts.map(post => (
-                  <div key={post.id} className="bg-white border border-gray-200 rounded-xl p-5">
+                  <div key={post.id} className="bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-xl p-5">
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <p className="text-gray-900 font-semibold text-sm">{post.user_name}</p>
-                        <p className="text-gray-400 text-xs">Post #{post.id}</p>
+                        <p className="text-gray-900 dark:text-[#f5f5f5] font-semibold text-sm">{post.user_name}</p>
+                        <p className="text-gray-400 dark:text-[#737373] text-xs">Post #{post.id}</p>
                       </div>
-                      <p className="text-gray-400 text-xs">{new Date(post.created_at).toLocaleDateString()}</p>
+                      <p className="text-gray-400 dark:text-[#737373] text-xs">{new Date(post.created_at).toLocaleDateString()}</p>
                     </div>
-                    <div className="bg-gray-50 border border-gray-100 rounded-lg p-4 mb-3">
+                    <div className="bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-[#2a2a2a] rounded-lg p-4 mb-3">
                       <div className="flex items-center justify-center gap-5">
                         <div className="text-center">
-                          <p className="text-gray-400 text-xs uppercase tracking-widest mb-0.5">From</p>
-                          <p className="text-gray-900 font-medium text-sm">{post.travelling_from}</p>
+                          <p className="text-gray-400 dark:text-[#737373] text-xs uppercase tracking-widest mb-0.5">From</p>
+                          <p className="text-gray-900 dark:text-[#f5f5f5] font-medium text-sm">{post.travelling_from}</p>
                         </div>
                         <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B35" strokeWidth="2" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
                         <div className="text-center">
-                          <p className="text-gray-400 text-xs uppercase tracking-widest mb-0.5">To</p>
-                          <p className="text-gray-900 font-medium text-sm">{post.travelling_to}</p>
+                          <p className="text-gray-400 dark:text-[#737373] text-xs uppercase tracking-widest mb-0.5">To</p>
+                          <p className="text-gray-900 dark:text-[#f5f5f5] font-medium text-sm">{post.travelling_to}</p>
                         </div>
                       </div>
                       <div className="text-center mt-2">
-                        <p className="text-gray-500 text-xs">{new Date(post.travel_date).toLocaleDateString()}</p>
+                        <p className="text-gray-500 dark:text-[#a3a3a3] text-xs">{new Date(post.travel_date).toLocaleDateString()}</p>
                       </div>
                     </div>
                     <button onClick={() => deletePost(post.id)}
-                      className="w-full text-red-600 border border-red-200 hover:border-red-400 h-10 rounded-lg text-sm transition-colors">
+                      className="w-full text-red-600 border border-red-200 dark:border-red-900/50 hover:border-red-400 dark:hover:border-red-700 h-10 rounded-lg text-sm transition-colors">
                       Delete Post
                     </button>
                   </div>
@@ -554,62 +554,62 @@ export default function TinderLikePage() {
       {/* Contact Modal */}
       {contactPost && (
         <div className="fixed inset-0 bg-black/40 flex items-end sm:items-center justify-center z-50 p-0 sm:p-4" onClick={() => setContactPost(null)}>
-          <div className="bg-white border border-gray-200 rounded-t-2xl sm:rounded-2xl p-5 sm:p-7 max-w-md w-full shadow-xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-t-2xl sm:rounded-2xl p-5 sm:p-7 max-w-md w-full shadow-xl dark:shadow-none" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-5">
-              <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.4rem", color: "#000" }}>Contact Traveller</h2>
-              <button onClick={() => setContactPost(null)} className="text-gray-400 hover:text-gray-900 text-xl leading-none">✕</button>
+              <h2 className="text-gray-900 dark:text-[#f5f5f5]" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.4rem" }}>Contact Traveller</h2>
+              <button onClick={() => setContactPost(null)} className="text-gray-400 dark:text-[#737373] hover:text-gray-900 dark:hover:text-[#f5f5f5] text-xl leading-none">✕</button>
             </div>
 
-            <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 mb-4">
-              <p className="text-gray-400 text-xs mb-1">Traveller</p>
-              <p className="text-gray-900 font-semibold">{contactPost.user_name}</p>
+            <div className="bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-[#2a2a2a] rounded-xl p-4 mb-4">
+              <p className="text-gray-400 dark:text-[#737373] text-xs mb-1">Traveller</p>
+              <p className="text-gray-900 dark:text-[#f5f5f5] font-semibold">{contactPost.user_name}</p>
             </div>
 
-            <div className="flex items-center justify-center gap-6 bg-gray-50 border border-gray-100 rounded-xl p-4 mb-4">
+            <div className="flex items-center justify-center gap-6 bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-[#2a2a2a] rounded-xl p-4 mb-4">
               <div className="text-center">
-                <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">From</p>
-                <p className="text-gray-900 font-semibold">{contactPost.travelling_from}</p>
+                <p className="text-gray-400 dark:text-[#737373] text-xs uppercase tracking-widest mb-1">From</p>
+                <p className="text-gray-900 dark:text-[#f5f5f5] font-semibold">{contactPost.travelling_from}</p>
               </div>
               <svg viewBox="0 0 24 24" fill="none" stroke="#FF6B35" strokeWidth="2" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" /></svg>
               <div className="text-center">
-                <p className="text-gray-400 text-xs uppercase tracking-widest mb-1">To</p>
-                <p className="text-gray-900 font-semibold">{contactPost.travelling_to}</p>
+                <p className="text-gray-400 dark:text-[#737373] text-xs uppercase tracking-widest mb-1">To</p>
+                <p className="text-gray-900 dark:text-[#f5f5f5] font-semibold">{contactPost.travelling_to}</p>
               </div>
             </div>
 
             <div className="space-y-3 mb-5">
               {contactPost.user_email && (
-                <div className="flex items-center justify-between bg-gray-50 border border-gray-100 rounded-xl p-4">
+                <div className="flex items-center justify-between bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-[#2a2a2a] rounded-xl p-4">
                   <div>
-                    <p className="text-gray-400 text-xs mb-0.5">📧 Email</p>
-                    <p className="text-gray-900 text-sm font-medium break-all">{contactPost.user_email}</p>
+                    <p className="text-gray-400 dark:text-[#737373] text-xs mb-0.5">📧 Email</p>
+                    <p className="text-gray-900 dark:text-[#f5f5f5] text-sm font-medium break-all">{contactPost.user_email}</p>
                   </div>
                   <button onClick={() => navigator.clipboard.writeText(contactPost.user_email)}
-                    className="ml-3 text-xs text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-400 px-3 py-1.5 rounded-lg shrink-0 transition-colors">
+                    className="ml-3 text-xs text-gray-500 dark:text-[#a3a3a3] hover:text-gray-900 dark:hover:text-[#f5f5f5] border border-gray-200 dark:border-[#2a2a2a] hover:border-gray-400 dark:hover:border-[#333333] px-3 py-1.5 rounded-lg shrink-0 transition-colors">
                     Copy
                   </button>
                 </div>
               )}
               {contactPost.user_phone ? (
-                <div className="flex items-center justify-between bg-gray-50 border border-gray-100 rounded-xl p-4">
+                <div className="flex items-center justify-between bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-[#2a2a2a] rounded-xl p-4">
                   <div>
-                    <p className="text-gray-400 text-xs mb-0.5">📱 Phone</p>
-                    <p className="text-gray-900 text-sm font-medium">{contactPost.user_phone}</p>
+                    <p className="text-gray-400 dark:text-[#737373] text-xs mb-0.5">📱 Phone</p>
+                    <p className="text-gray-900 dark:text-[#f5f5f5] text-sm font-medium">{contactPost.user_phone}</p>
                   </div>
                   <button onClick={() => navigator.clipboard.writeText(contactPost.user_phone)}
-                    className="ml-3 text-xs text-gray-500 hover:text-gray-900 border border-gray-200 hover:border-gray-400 px-3 py-1.5 rounded-lg shrink-0 transition-colors">
+                    className="ml-3 text-xs text-gray-500 dark:text-[#a3a3a3] hover:text-gray-900 dark:hover:text-[#f5f5f5] border border-gray-200 dark:border-[#2a2a2a] hover:border-gray-400 dark:hover:border-[#333333] px-3 py-1.5 rounded-lg shrink-0 transition-colors">
                     Copy
                   </button>
                 </div>
               ) : (
-                <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 text-center">
-                  <p className="text-gray-400 text-sm">No phone number added by this traveller</p>
+                <div className="bg-gray-50 dark:bg-[#1a1a1a] border border-gray-100 dark:border-[#2a2a2a] rounded-xl p-3 text-center">
+                  <p className="text-gray-400 dark:text-[#737373] text-sm">No phone number added by this traveller</p>
                 </div>
               )}
             </div>
 
             <button onClick={() => { sendConnectionRequest(contactPost); setContactPost(null); }}
-              className="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-xl text-sm font-medium transition-colors">
+              className="w-full bg-black dark:bg-white hover:bg-gray-800 dark:hover:bg-gray-100 text-white dark:text-black py-3 rounded-xl text-sm font-medium transition-colors">
               ❤️ Send Connection Request
             </button>
           </div>

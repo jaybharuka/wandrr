@@ -5,12 +5,12 @@ export const useUser = () => useContext(UserContext);
 
 export function UserProvider({ children }) {
   const [user, setUserState] = useState(() => {
-    // Load user from localStorage on initial load
     const stored = localStorage.getItem("user");
     return stored ? JSON.parse(stored) : null;
   });
 
-  // Persist user to localStorage whenever it changes
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark");
+
   useEffect(() => {
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
@@ -19,27 +19,32 @@ export function UserProvider({ children }) {
     }
   }, [user]);
 
-  // Set user (from signup/signin)
-  const setUser = (userData) => {
-    setUserState(userData);
-  };
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
 
-  // Logout function
+  const toggleDarkMode = () => setDarkMode(prev => !prev);
+
+  const setUser = (userData) => setUserState(userData);
+
   const logout = () => {
     setUserState(null);
     localStorage.removeItem("user");
   };
 
-  // Legacy support for userId
   const userId = user?.id || null;
   const setUserId = (id) => {
-    if (id && user) {
-      setUserState({ ...user, id });
-    }
+    if (id && user) setUserState({ ...user, id });
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, userId, setUserId, logout }}>
+    <UserContext.Provider value={{ user, setUser, userId, setUserId, logout, darkMode, toggleDarkMode }}>
       {children}
     </UserContext.Provider>
   );

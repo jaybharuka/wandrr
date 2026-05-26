@@ -10,15 +10,14 @@ router.get('/', (req, res) => {
   }
 
   db.query(
-    `SELECT id, name, age, origin_city, destination_city FROM profiles WHERE destination_city = ? AND id != ?`,
+    `SELECT id, name, age, origin_city, destination_city FROM profiles WHERE destination_city = $1 AND id != $2`,
     [destination, exclude],
-    (err, results) => {
+    (err, result) => {
       if (err) {
         console.error(err);
         return res.status(500).json({ error: "Database error" });
       }
-      // Format keys to camelCase for frontend
-      const formatted = results.map(row => ({
+      const formatted = result.rows.map(row => ({
         id: row.id,
         name: row.name,
         age: row.age,

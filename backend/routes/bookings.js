@@ -5,33 +5,31 @@ const db = require('../config/db');
 // POST /api/bookings - Add a new flight booking
 router.post('/', (req, res) => {
 	const { userId, destination, flight_details, booking_date } = req.body;
-	
-	// Validate required fields
-	if (!userId || !destination || !flight_details || !booking_date) {
-		return res.status(400).json({ 
+
+	if (!userId || !destination || !flight_details) {
+		return res.status(400).json({
 			error: 'Missing required fields.',
-			required: ['userId', 'destination', 'flight_details', 'booking_date'],
-			received: req.body
+			required: ['userId', 'destination', 'flight_details'],
 		});
 	}
 
-	// Validate data types
-	if (typeof userId !== 'number' && isNaN(parseInt(userId))) {
+	if (isNaN(parseInt(userId))) {
 		return res.status(400).json({ error: 'userId must be a valid number.' });
 	}
 
-	const sql = 'INSERT INTO bookings (user_id, destination, flight_details, booking_date, status) VALUES (?, ?, ?, ?, ?)';
-	db.query(sql, [parseInt(userId), destination, flight_details, booking_date, 'active'], (err, result) => {
+	const sql = `INSERT INTO bookings (user_id, destination, flight_details, booking_date, status, created_at)
+	             VALUES ($1, $2, $3, COALESCE($4, CURRENT_TIMESTAMP), 'active', CURRENT_TIMESTAMP) RETURNING id`;
+	db.query(sql, [parseInt(userId), destination, flight_details, booking_date || null], (err, result) => {
 		if (err) {
-			return res.status(500).json({ 
+			return res.status(500).json({
 				error: 'Database error occurred while creating booking.',
-				details: err.message 
+				details: err.message,
 			});
 		}
-		res.status(201).json({ 
+		res.status(201).json({
 			success: true,
-			booking_id: result.insertId,
-			message: 'Flight booking created successfully'
+			booking_id: result.rows[0].id,
+			message: 'Flight booking created successfully',
 		});
 	});
 });
@@ -39,27 +37,28 @@ router.post('/', (req, res) => {
 // GET /api/bookings?userId=xx - Get bookings for a user
 router.get('/', (req, res) => {
 	const { userId } = req.query;
-	let sql = 'SELECT * FROM bookings WHERE status = ?';
-	let params = ['active'];
-	
+	let sql = `SELECT id AS booking_id, user_id, destination, flight_details, status, booking_date, created_at
+	           FROM bookings WHERE status != 'cancelled'`;
+	const params = [];
+
 	if (userId) {
-		sql += ' AND user_id = ?';
 		params.push(parseInt(userId));
+		sql += ` AND user_id = $${params.length}`;
 	}
-	
+
 	sql += ' ORDER BY created_at DESC';
-	
-	db.query(sql, params, (err, results) => {
+
+	db.query(sql, params, (err, result) => {
 		if (err) {
-			return res.status(500).json({ 
+			return res.status(500).json({
 				error: 'Database error occurred while fetching bookings.',
-				details: err.message 
+				details: err.message,
 			});
 		}
 		res.json({
 			success: true,
-			bookings: results,
-			count: results.length
+			bookings: result.rows,
+			count: result.rows.length,
 		});
 	});
 });
@@ -67,28 +66,27 @@ router.get('/', (req, res) => {
 // DELETE /api/bookings/:id - Cancel a flight booking
 router.delete('/:id', (req, res) => {
 	const bookingId = req.params.id;
-	
-	// Validate booking ID
+
 	if (!bookingId || isNaN(parseInt(bookingId))) {
 		return res.status(400).json({ error: 'Invalid booking ID provided.' });
 	}
-	
-	// Use soft delete by updating status instead of hard delete
-	const sql = 'UPDATE bookings SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE booking_id = ? AND status = ?';
-	db.query(sql, ['cancelled', parseInt(bookingId), 'active'], (err, result) => {
+
+	const sql = `UPDATE bookings SET status = 'cancelled', updated_at = CURRENT_TIMESTAMP
+	             WHERE id = $1 AND status = 'active'`;
+	db.query(sql, [parseInt(bookingId)], (err, result) => {
 		if (err) {
-			return res.status(500).json({ 
+			return res.status(500).json({
 				error: 'Database error occurred while cancelling booking.',
-				details: err.message 
+				details: err.message,
 			});
 		}
-		if (result.affectedRows === 0) {
-				return res.status(404).json({ error: 'Active booking not found.' });
+		if (result.rowCount === 0) {
+			return res.status(404).json({ error: 'Active booking not found.' });
 		}
-		res.json({ 
+		res.json({
 			success: true,
 			message: 'Flight booking cancelled successfully',
-			booking_id: parseInt(bookingId)
+			booking_id: parseInt(bookingId),
 		});
 	});
 });

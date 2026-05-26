@@ -223,27 +223,27 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
             {String.fromCharCode(65 + i)}
           </div>
         ))}
-        {count > max && <span className="ml-2 text-xs text-gray-400">+{count - max}</span>}
+        {count > max && <span className="ml-2 text-xs text-gray-400 dark:text-[#737373]">+{count - max}</span>}
       </div>
     );
   };
 
   const tabClass = (tab) =>
     `px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
-      activeTab === tab ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"
+      activeTab === tab ? "bg-white dark:bg-[#1e1e1e] text-gray-900 dark:text-[#f5f5f5] shadow-sm dark:shadow-none" : "text-gray-500 dark:text-[#a3a3a3] hover:text-gray-700 dark:hover:text-[#d4d4d4]"
     }`;
 
-  const INPUT_CLS = "w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-400 transition-colors text-base";
+  const INPUT_CLS = "w-full px-4 py-3 bg-white dark:bg-[#2a2a2a] border border-gray-300 dark:border-[#333333] rounded-xl text-gray-900 dark:text-[#f5f5f5] placeholder-gray-400 dark:placeholder-[#737373] focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-gray-400 transition-colors text-base";
 
   if (!userId) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-        <div className="text-center border border-gray-200 rounded-2xl p-10 max-w-sm">
-          <div className="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+      <div className="min-h-screen bg-white dark:bg-[#0f0f0f] flex items-center justify-center" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+        <div className="text-center border border-gray-200 dark:border-[#2a2a2a] rounded-2xl p-10 max-w-sm">
+          <div className="w-14 h-14 rounded-full bg-gray-100 dark:bg-[#2a2a2a] flex items-center justify-center mx-auto mb-4">
             <svg viewBox="0 0 24 24" fill="none" stroke="#9ca3af" strokeWidth="1.8" className="w-7 h-7"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
           </div>
-          <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.5rem", color: "#000" }}>Sign in required</h2>
-          <p className="text-gray-500 text-sm mt-2 mb-6">You need to be signed in to view or create travel groups.</p>
+          <h2 className="text-gray-900 dark:text-[#f5f5f5]" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.5rem" }}>Sign in required</h2>
+          <p className="text-gray-500 dark:text-[#a3a3a3] text-sm mt-2 mb-6">You need to be signed in to view or create travel groups.</p>
           <button onClick={() => navigate("/signin")} className="btn-accent py-3 px-8 rounded-xl text-sm font-medium">
             Sign In
           </button>
@@ -253,23 +253,23 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
   }
 
   return (
-    <div className="min-h-screen bg-white pb-20 sm:pb-0" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <div className="min-h-screen bg-white dark:bg-[#0f0f0f] pb-20 sm:pb-0" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
       {/* Confirm modal */}
       {confirmAction && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white border border-gray-200 rounded-2xl p-7 max-w-sm w-full mx-4 shadow-xl">
-            <p className="text-gray-900 font-semibold mb-2">
+          <div className="bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-2xl p-7 max-w-sm w-full mx-4 shadow-xl dark:shadow-none">
+            <p className="text-gray-900 dark:text-[#f5f5f5] font-semibold mb-2">
               {confirmAction.action === "delete" ? "Delete Group?" : "Leave Group?"}
             </p>
-            <p className="text-gray-500 text-sm mb-6">
+            <p className="text-gray-500 dark:text-[#a3a3a3] text-sm mb-6">
               {confirmAction.action === "delete"
                 ? `"${confirmAction.groupName}" and all members will be permanently removed.`
                 : `You will no longer be a member of "${confirmAction.groupName}".`}
             </p>
             <div className="flex gap-3">
               <button onClick={() => setConfirmAction(null)}
-                className="flex-1 bg-white border border-gray-200 hover:border-gray-400 text-gray-700 py-2.5 rounded-xl text-sm font-medium transition-colors">
+                className="flex-1 bg-white dark:bg-[#2a2a2a] border border-gray-200 dark:border-[#2a2a2a] hover:border-gray-400 dark:hover:border-[#333333] text-gray-700 dark:text-[#d4d4d4] py-2.5 rounded-xl text-sm font-medium transition-colors">
                 Cancel
               </button>
               <button onClick={confirmAndExecute}
@@ -285,39 +285,39 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
 
       {toast && (
         <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-xl text-sm font-medium shadow-lg border ${
-          toast.type === "error" ? "bg-red-50 border-red-200 text-red-600" : "bg-green-50 border-green-200 text-green-700"
+          toast.type === "error" ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400" : "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400"
         }`}>
           {toast.msg}
         </div>
       )}
 
       {/* Nav */}
-      <nav className="border-b border-gray-100 px-4 sm:px-10 py-4 sm:py-5 flex items-center justify-between">
-        <span style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.75rem", color: "#000", letterSpacing: "-0.02em" }}>
+      <nav className="border-b border-gray-100 dark:border-[#2a2a2a] px-4 sm:px-10 py-4 sm:py-5 flex items-center justify-between">
+        <span className="text-gray-900 dark:text-[#f5f5f5]" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.75rem", letterSpacing: "-0.02em" }}>
           Wandrr<sup style={{ fontSize: "0.5em", verticalAlign: "super" }}>®</sup>
         </span>
-        <button onClick={() => navigate(-1)} className="text-sm text-gray-500 hover:text-gray-900 transition-colors">← Back</button>
+        <button onClick={() => navigate(-1)} className="text-sm text-gray-500 dark:text-[#a3a3a3] hover:text-gray-900 dark:hover:text-[#f5f5f5] transition-colors">← Back</button>
       </nav>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "clamp(2rem, 5vw, 3rem)", color: "#000", letterSpacing: "-1.5px", lineHeight: 1 }}>
+          <h1 className="text-gray-900 dark:text-[#f5f5f5]" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "clamp(2rem, 5vw, 3rem)", letterSpacing: "-1.5px", lineHeight: 1 }}>
             Travel Groups
           </h1>
-          <p className="text-gray-500 text-sm mt-2">Create, join, and discover group adventures</p>
+          <p className="text-gray-500 dark:text-[#a3a3a3] text-sm mt-2">Create, join, and discover group adventures</p>
         </div>
 
         {/* Destination selector */}
-        <div className="flex items-center gap-4 bg-gray-50 border border-gray-200 rounded-xl px-5 py-3 mb-6">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-gray-400 shrink-0"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
+        <div className="flex items-center gap-4 bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a] rounded-xl px-5 py-3 mb-6">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 text-gray-400 dark:text-[#737373] shrink-0"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
           <select value={selectedLocation} onChange={e => setSelectedLocation(e.target.value)}
-            className="flex-1 bg-gray-50 border-0 text-gray-900 text-sm font-medium focus:outline-none cursor-pointer">
+            className="flex-1 bg-gray-50 dark:bg-[#1a1a1a] border-0 text-gray-900 dark:text-[#f5f5f5] text-sm font-medium focus:outline-none cursor-pointer">
             {locations.map(loc => <option key={loc} value={loc}>{loc}</option>)}
           </select>
         </div>
 
         {/* Tabs */}
-        <div className="flex flex-wrap bg-gray-100 rounded-xl p-1 gap-1 mb-6">
+        <div className="flex flex-wrap bg-gray-100 dark:bg-[#2a2a2a] rounded-xl p-1 gap-1 mb-6">
           <button className={tabClass("my-groups")} onClick={() => setActiveTab("my-groups")}>My Groups ({myGroups.length})</button>
           <button className={tabClass("create")} onClick={() => setActiveTab("create")}>Create</button>
           <button className={tabClass("join")} onClick={() => setActiveTab("join")}>Join by Code</button>
@@ -329,17 +329,17 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
           <div>
             {loadingGroups ? (
               <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-900 border-t-transparent mx-auto mb-3"></div>
-                <p className="text-gray-400 text-sm">Loading your groups…</p>
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-900 dark:border-[#f5f5f5] border-t-transparent mx-auto mb-3"></div>
+                <p className="text-gray-400 dark:text-[#737373] text-sm">Loading your groups…</p>
               </div>
             ) : myGroups.length === 0 ? (
-              <div className="text-center border border-gray-200 rounded-xl p-10">
-                <p className="text-gray-500 text-sm">You haven't joined any groups yet. Create one or discover public groups!</p>
+              <div className="text-center border border-gray-200 dark:border-[#2a2a2a] rounded-xl p-10">
+                <p className="text-gray-500 dark:text-[#a3a3a3] text-sm">You haven't joined any groups yet. Create one or discover public groups!</p>
               </div>
             ) : (
               <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
                 {myGroups.map((g) => (
-                  <div key={g.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
+                  <div key={g.id} className="bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-xl overflow-hidden hover:-translate-y-0.5 hover:shadow-md dark:hover:shadow-none transition-all duration-200">
                     {/* Destination banner */}
                     <div className={`h-16 bg-gradient-to-r ${destColor(g.destination)} flex items-end px-5 pb-3`}>
                       <div className="flex items-center gap-2">
@@ -354,19 +354,19 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
                       </div>
                     </div>
                     <div className="p-5">
-                    <h3 className="text-gray-900 font-semibold mb-1">{g.name}</h3>
-                    {g.description && <p className="text-gray-500 text-sm mb-3">{g.description}</p>}
+                    <h3 className="text-gray-900 dark:text-[#f5f5f5] font-semibold mb-1">{g.name}</h3>
+                    {g.description && <p className="text-gray-500 dark:text-[#a3a3a3] text-sm mb-3">{g.description}</p>}
                     <div className="flex items-center justify-between mb-3">
                       <StackedAvatars count={g.member_count} />
-                      <span className="text-xs text-gray-400">{g.member_count}/{g.max_members} members</span>
+                      <span className="text-xs text-gray-400 dark:text-[#737373]">{g.member_count}/{g.max_members} members</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
-                        <span className="text-gray-400 text-xs">Code: </span>
-                        <span className="text-gray-900 font-mono font-semibold text-sm">{g.join_code}</span>
+                      <div className="flex-1 bg-gray-50 dark:bg-[#1a1a1a] border border-gray-200 dark:border-[#2a2a2a] rounded-lg px-3 py-2">
+                        <span className="text-gray-400 dark:text-[#737373] text-xs">Code: </span>
+                        <span className="text-gray-900 dark:text-[#f5f5f5] font-mono font-semibold text-sm">{g.join_code}</span>
                       </div>
                       <button onClick={() => { navigator.clipboard.writeText(g.join_code); showToast("Code copied!"); }}
-                        className="text-xs text-gray-600 border border-gray-200 hover:border-gray-400 px-3 py-2 rounded-lg transition-colors">
+                        className="text-xs text-gray-600 dark:text-[#d4d4d4] border border-gray-200 dark:border-[#2a2a2a] hover:border-gray-400 dark:hover:border-[#333333] px-3 py-2 rounded-lg transition-colors">
                         Copy
                       </button>
                       {String(g.created_by) === String(userId) ? (
@@ -376,7 +376,7 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
                         </button>
                       ) : (
                         <button onClick={() => setConfirmAction({ groupId: g.id, groupName: g.name, action: "leave" })}
-                          className="text-xs text-gray-600 border border-gray-200 hover:border-gray-400 px-3 py-2 rounded-lg transition-colors">
+                          className="text-xs text-gray-600 dark:text-[#d4d4d4] border border-gray-200 dark:border-[#2a2a2a] hover:border-gray-400 dark:hover:border-[#333333] px-3 py-2 rounded-lg transition-colors">
                           Leave
                         </button>
                       )}
@@ -391,26 +391,26 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
 
         {/* CREATE GROUP */}
         {activeTab === "create" && (
-          <form onSubmit={handleCreateGroup} className="bg-white border border-gray-200 rounded-xl p-6 max-w-lg mx-auto space-y-4">
-            <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.5rem", color: "#000" }}>Create a Travel Group</h2>
+          <form onSubmit={handleCreateGroup} className="bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-xl p-6 max-w-lg mx-auto space-y-4">
+            <h2 className="text-gray-900 dark:text-[#f5f5f5]" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.5rem" }}>Create a Travel Group</h2>
             <div>
-              <label className="block text-gray-700 text-sm font-medium mb-2">Group Name *</label>
+              <label className="block text-gray-700 dark:text-[#d4d4d4] text-sm font-medium mb-2">Group Name *</label>
               <input type="text" value={groupName} onChange={e => setGroupName(e.target.value)}
                 placeholder="e.g. Goa Beach Crew 2025" className={INPUT_CLS} required />
             </div>
             <div>
-              <label className="block text-gray-700 text-sm font-medium mb-1">Destination</label>
-              <p className="text-gray-900 font-medium text-sm">{selectedLocation}</p>
-              <p className="text-gray-400 text-xs">Change via the selector above.</p>
+              <label className="block text-gray-700 dark:text-[#d4d4d4] text-sm font-medium mb-1">Destination</label>
+              <p className="text-gray-900 dark:text-[#f5f5f5] font-medium text-sm">{selectedLocation}</p>
+              <p className="text-gray-400 dark:text-[#737373] text-xs">Change via the selector above.</p>
             </div>
             <div>
-              <label className="block text-gray-700 text-sm font-medium mb-2">Description</label>
+              <label className="block text-gray-700 dark:text-[#d4d4d4] text-sm font-medium mb-2">Description</label>
               <textarea value={groupDesc} onChange={e => setGroupDesc(e.target.value)}
                 placeholder="What's this group about?" rows={3}
                 className={INPUT_CLS + " resize-none"} />
             </div>
             <div>
-              <label className="block text-gray-700 text-sm font-medium mb-2">Max Members</label>
+              <label className="block text-gray-700 dark:text-[#d4d4d4] text-sm font-medium mb-2">Max Members</label>
               <select value={maxMembers} onChange={e => setMaxMembers(Number(e.target.value))} className={INPUT_CLS}>
                 {[5,10,15,20,30,50].map(n => <option key={n} value={n}>{n} members</option>)}
               </select>
@@ -418,7 +418,7 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
             <div className="flex items-center gap-3">
               <input type="checkbox" id="isPrivate" checked={isPrivate} onChange={e => setIsPrivate(e.target.checked)}
                 className="w-4 h-4 accent-gray-900" />
-              <label htmlFor="isPrivate" className="text-gray-700 text-sm">Private (only joinable by code)</label>
+              <label htmlFor="isPrivate" className="text-gray-700 dark:text-[#d4d4d4] text-sm">Private (only joinable by code)</label>
             </div>
             <button type="submit" disabled={creating} className="btn-accent w-full py-3 rounded-xl text-sm font-medium">
               {creating ? "Creating…" : "Create Group"}
@@ -428,9 +428,9 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
 
         {/* JOIN BY CODE */}
         {activeTab === "join" && (
-          <form onSubmit={handleJoinGroup} className="bg-white border border-gray-200 rounded-xl p-6 max-w-md mx-auto space-y-4">
-            <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.5rem", color: "#000" }}>Join by Code</h2>
-            <p className="text-gray-500 text-sm">Enter the 8-character join code shared by a group member.</p>
+          <form onSubmit={handleJoinGroup} className="bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-xl p-6 max-w-md mx-auto space-y-4">
+            <h2 className="text-gray-900 dark:text-[#f5f5f5]" style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.5rem" }}>Join by Code</h2>
+            <p className="text-gray-500 dark:text-[#a3a3a3] text-sm">Enter the 8-character join code shared by a group member.</p>
             <input type="text" value={joinCode} onChange={e => setJoinCode(e.target.value.toUpperCase())}
               placeholder="A1B2C3D4" maxLength={8}
               className={INPUT_CLS + " font-mono text-lg tracking-widest uppercase text-center"} required />
@@ -443,19 +443,19 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
         {/* DISCOVER */}
         {activeTab === "discover" && (
           <div>
-            <p className="text-gray-500 text-sm mb-5">Public groups headed to <span className="text-gray-900 font-semibold">{selectedLocation}</span></p>
+            <p className="text-gray-500 dark:text-[#a3a3a3] text-sm mb-5">Public groups headed to <span className="text-gray-900 dark:text-[#f5f5f5] font-semibold">{selectedLocation}</span></p>
             {loadingDiscover ? (
-              <div className="text-center py-12 text-gray-400 text-sm">Loading groups…</div>
+              <div className="text-center py-12 text-gray-400 dark:text-[#737373] text-sm">Loading groups…</div>
             ) : discoverGroups.length === 0 ? (
-              <div className="text-center border border-gray-200 rounded-xl p-10">
-                <p className="text-gray-400 text-sm">No public groups for {selectedLocation} yet. Be the first to create one!</p>
+              <div className="text-center border border-gray-200 dark:border-[#2a2a2a] rounded-xl p-10">
+                <p className="text-gray-400 dark:text-[#737373] text-sm">No public groups for {selectedLocation} yet. Be the first to create one!</p>
               </div>
             ) : (
               <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
                 {discoverGroups.map((g) => {
                   const isJoined = joinedIds.has(g.id);
                   return (
-                  <div key={g.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:-translate-y-0.5 hover:shadow-md transition-all duration-200">
+                  <div key={g.id} className="bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-[#2a2a2a] rounded-xl overflow-hidden hover:-translate-y-0.5 hover:shadow-md dark:hover:shadow-none transition-all duration-200">
                     {/* Destination banner */}
                     <div className={`h-16 bg-gradient-to-r ${destColor(g.destination)} flex items-end px-5 pb-3`}>
                       <div className="flex items-center gap-2">
@@ -464,11 +464,11 @@ export default function TravelGroupsPage({ selectedLocation: initialLocation }) 
                       </div>
                     </div>
                     <div className="p-5">
-                    <h3 className="text-gray-900 font-semibold mb-1">{g.name}</h3>
-                    {g.description && <p className="text-gray-400 text-sm mb-3">{g.description}</p>}
+                    <h3 className="text-gray-900 dark:text-[#f5f5f5] font-semibold mb-1">{g.name}</h3>
+                    {g.description && <p className="text-gray-400 dark:text-[#737373] text-sm mb-3">{g.description}</p>}
                     <div className="flex items-center justify-between mb-4">
                       <StackedAvatars count={g.member_count} />
-                      <span className="text-xs text-gray-400">{g.member_count}/{g.max_members}</span>
+                      <span className="text-xs text-gray-400 dark:text-[#737373]">{g.member_count}/{g.max_members}</span>
                     </div>
                     <button
                       onClick={() => { if (!isJoined) { handleJoinPublicGroup(g.join_code); setJoinedIds(s => new Set([...s, g.id])); } }}
