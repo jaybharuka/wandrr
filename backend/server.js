@@ -17,10 +17,6 @@ const io = new Server(httpServer, {
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Wandrr Backend is running 🚀");
-});
-
 // Run missing-column migrations on startup
 db.query(`
   ALTER TABLE bookings ADD COLUMN IF NOT EXISTS flight_details TEXT;
