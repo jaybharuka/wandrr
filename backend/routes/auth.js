@@ -1,276 +1,129 @@
 import express from 'express';
+import bcrypt from 'bcryptjs';
 import db from '../config/db.js';
-import otpService from '../services/otpService.js';
 
 const router = express.Router();
 
-// POST /api/auth/signup/initiate - Start signup process and send OTPs
-router.post('/signup/initiate', async (req, res) => {
-  const { name, phone, email } = req.body;
+// POST /api/auth/signup - Create account with username/email and 4-digit PIN
+router.post('/signup', async (req, res) => {
+  const { name, username, email, phone, pin } = req.body;
 
-  if (!name || !email) {
-    return res.status(400).json({ error: 'Name and email are required.' });
+  // Validate required fields
+  if (!name || !username || !email || !pin) {
+    return res.status(400).json({ error: 'Name, username, email, and PIN are required.' });
   }
 
-  if (phone) {
-    const phoneRegex = /^\+91[6-9]\d{9}$/;
-    if (!phoneRegex.test(phone)) {
-      return res.status(400).json({ error: 'Phone number must be in format +91XXXXXXXXXX (10 digits starting with 6-9).' });
-    }
+  // Validate PIN is exactly 4 digits
+  if (!/^\d{4}$/.test(pin)) {
+    return res.status(400).json({ error: 'PIN must be exactly 4 digits.' });
   }
 
+  // Validate email format
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({ error: 'Please enter a valid email address.' });
   }
 
-  const checkQuery = phone
-    ? 'SELECT id, is_verified FROM users WHERE phone = $1 OR email = $2'
-    : 'SELECT id, is_verified FROM users WHERE email = $1';
-  const checkParams = phone ? [phone, email] : [email];
-
-  db.query(checkQuery, checkParams, async (err, result) => {
-    if (err) {
-      console.error('Database check error:', err);
-      return res.status(500).json({ error: 'Database error during validation.' });
-    }
-
-    if (result.rows?.length > 0) {
-      const existing = result.rows[0];
-      if (existing.is_verified) {
-        return res.status(400).json({ error: 'Phone number or email already registered.' });
-      }
-
-      const emailOTP = otpService.generateOTP();
-      const otpExpiry = otpService.getOTPExpiry();
-      const updateQuery = 'UPDATE users SET email_otp = $1, email_otp_expires_at = $2 WHERE id = $3';
-
-      db.query(updateQuery, [emailOTP, otpExpiry, existing.id], (err) => {
-        if (err) {
-          return res.status(500).json({ error: 'Failed to resend OTP.' });
-        }
-        // Send email in background
-        otpService.sendEmailOTP(email, emailOTP, 'signup').catch(e => {
-          console.error('Background email send error:', e.message);
-        });
-        return res.json({
-          success: true,
-          message: 'OTP resent to your email!',
-          userId: existing.id
-        });
-      });
-      return;
-    }
-
-    const emailOTP = otpService.generateOTP();
-    const otpExpiry = otpService.getOTPExpiry();
-
-    const insertQuery = `
-      INSERT INTO users (name, phone, email, email_otp, email_otp_expires_at, email_verified, is_verified)
-      VALUES ($1, $2, $3, $4, $5, false, false)
-      RETURNING id
-    `;
-
-    db.query(insertQuery, [name, phone || null, email, emailOTP, otpExpiry], (err, result) => {
-      if (err) {
-        return res.status(500).json({ error: 'Failed to initiate signup.' });
-      }
-
-      const userId = result.rows[0]?.id;
-
-      // Send email in background (don't wait)
-      otpService.sendEmailOTP(email, emailOTP, 'signup').catch(e => {
-        console.error('Background email send error:', e.message);
-      });
-
-      res.status(201).json({
-        success: true,
-        message: 'OTP sent to your email!',
-        userId
-      });
-    });
-  });
-});
-
-// POST /api/auth/signup/verify - Verify OTPs and complete signup
-router.post('/signup/verify', (req, res) => {
-  const { userId, emailOTP } = req.body;
-
-  if (!userId || !emailOTP) {
-    return res.status(400).json({ error: 'User ID and email OTP are required.' });
-  }
-
-  const getUserQuery = `
-    SELECT id, name, phone, email, email_otp, email_otp_expires_at, email_verified
-    FROM users WHERE id = $1
-  `;
-
-  db.query(getUserQuery, [userId], (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Database error during verification.' });
-    }
-
-    if (result.rows?.length === 0) {
-      return res.status(404).json({ error: 'User not found.' });
-    }
-
-    const user = result.rows[0];
-    const emailValid = otpService.isOTPValid(user.email_otp, emailOTP, user.email_otp_expires_at);
-
-    if (!emailValid) {
-      return res.status(400).json({
-        error: 'Invalid or expired email OTP.'
-      });
-    }
-
-    const updateQuery = `
-      UPDATE users
-      SET email_verified = true, is_verified = true,
-          email_otp = NULL, email_otp_expires_at = NULL
-      WHERE id = $1
-    `;
-
-    db.query(updateQuery, [userId], (err) => {
-      if (err) {
-        console.error('Database update error:', err);
-        return res.status(500).json({ error: 'Failed to complete verification.' });
-      }
-
-      res.json({
-        success: true,
-        message: 'Signup completed successfully!',
-        user: {
-          id: user.id,
-          name: user.name,
-          phone: user.phone,
-          email: user.email
-        }
-      });
-    });
-  });
-});
-
-// POST /api/auth/signin/initiate - Send OTP for signin
-router.post('/signin/initiate', async (req, res) => {
-  const { phone, email } = req.body;
-
-  if (!phone && !email) {
-    return res.status(400).json({ error: 'Phone number or email is required.' });
-  }
-
-  const loginField = phone || email;
-  const loginColumn = phone ? 'phone' : 'email';
-  const otpType = phone ? 'phone' : 'email';
-
+  // Validate phone if provided
   if (phone) {
     const phoneRegex = /^\+91[6-9]\d{9}$/;
     if (!phoneRegex.test(phone)) {
-      return res.status(400).json({ error: 'Invalid phone number format. Use +91XXXXXXXXXX.' });
+      return res.status(400).json({ error: 'Phone number must be in format +91XXXXXXXXXX.' });
     }
   }
 
-  const sql = `SELECT id, name, phone, email FROM users WHERE ${loginColumn} = $1`;
-  db.query(sql, [loginField], async (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Database error during signin.' });
-    }
-
-    if (result.rows?.length === 0) {
-      return res.status(401).json({ error: 'User not found. Please register first.' });
-    }
-
-    const user = result.rows[0];
-    const otp = otpService.generateOTP();
-    const otpExpiry = otpService.getOTPExpiry();
-
-    const otpColumn = otpType === 'phone' ? 'phone_otp' : 'email_otp';
-    const expiryColumn = otpType === 'phone' ? 'phone_otp_expires_at' : 'email_otp_expires_at';
-
-    const updateQuery = `UPDATE users SET ${otpColumn} = $1, ${expiryColumn} = $2 WHERE id = $3`;
-    db.query(updateQuery, [otp, otpExpiry, user.id], (err) => {
-      if (err) {
-        console.error('Database update error:', err);
-        return res.status(500).json({ error: 'Failed to generate OTP.' });
-      }
-
-      // Send OTP in background (don't wait)
-      if (otpType === 'phone') {
-        otpService.sendPhoneOTP(user.phone, otp, 'signin').catch(e => {
-          console.error('Background phone OTP error:', e.message);
-        });
-      } else {
-        otpService.sendEmailOTP(user.email, otp, 'signin').catch(e => {
-          console.error('Background email OTP error:', e.message);
-        });
-      }
-
-      res.json({
-        success: true,
-        message: `OTP sent to your ${otpType}!`,
-        userId: user.id,
-        otpType
+  try {
+    // Check if username or email already exists
+    const checkQuery = 'SELECT id FROM users WHERE username = $1 OR email = $2';
+    const checkResult = await new Promise((resolve, reject) => {
+      db.query(checkQuery, [username.toLowerCase(), email], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
       });
     });
-  });
-});
 
-// POST /api/auth/signin/verify - Verify OTP and complete signin
-router.post('/signin/verify', (req, res) => {
-  const { userId, otp, otpType } = req.body;
-
-  if (!userId || !otp || !otpType) {
-    return res.status(400).json({ error: 'User ID, OTP, and OTP type are required.' });
-  }
-
-  if (!['phone', 'email'].includes(otpType)) {
-    return res.status(400).json({ error: 'OTP type must be either "phone" or "email".' });
-  }
-
-  const otpColumn = otpType === 'phone' ? 'phone_otp' : 'email_otp';
-  const expiryColumn = otpType === 'phone' ? 'phone_otp_expires_at' : 'email_otp_expires_at';
-
-  const getUserQuery = `
-    SELECT id, name, phone, email, ${otpColumn} as stored_otp, ${expiryColumn} as otp_expires_at
-    FROM users WHERE id = $1
-  `;
-
-  db.query(getUserQuery, [userId], (err, result) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Database error during verification.' });
+    if (checkResult.rows.length > 0) {
+      return res.status(409).json({ error: 'Username or email already exists.' });
     }
 
-    if (result.rows?.length === 0) {
+    // Hash PIN with bcrypt (salt rounds = 10)
+    const hashedPin = await bcrypt.hash(pin, 10);
+
+    // Insert new user
+    const insertQuery = `
+      INSERT INTO users (name, username, email, phone, pin)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING id, name, username, email
+    `;
+    const insertResult = await new Promise((resolve, reject) => {
+      db.query(insertQuery, [name, username.toLowerCase(), email, phone || null, hashedPin], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+
+    const user = insertResult.rows[0];
+    return res.status(201).json({
+      success: true,
+      message: 'Account created',
+      user: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('Signup error:', error);
+    return res.status(500).json({ error: 'Failed to create account.' });
+  }
+});
+
+// POST /api/auth/signin - Sign in with username/email and PIN
+router.post('/signin', async (req, res) => {
+  const { identifier, pin } = req.body;
+
+  if (!identifier || !pin) {
+    return res.status(400).json({ error: 'Username/email and PIN are required.' });
+  }
+
+  try {
+    // Find user by username or email
+    const getUserQuery = 'SELECT id, name, username, email, phone, pin FROM users WHERE username = $1 OR email = $1';
+    const getUserResult = await new Promise((resolve, reject) => {
+      db.query(getUserQuery, [identifier.toLowerCase()], (err, result) => {
+        if (err) reject(err);
+        else resolve(result);
+      });
+    });
+
+    if (getUserResult.rows.length === 0) {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    const user = result.rows[0];
-    const otpValid = otpService.isOTPValid(user.stored_otp, otp, user.otp_expires_at);
+    const user = getUserResult.rows[0];
 
-    if (!otpValid) {
-      return res.status(400).json({ error: 'Invalid or expired OTP.' });
+    // Compare PIN with hashed PIN
+    const pinMatch = await bcrypt.compare(pin, user.pin);
+    if (!pinMatch) {
+      return res.status(401).json({ error: 'Invalid PIN.' });
     }
 
-    const clearQuery = `UPDATE users SET ${otpColumn} = NULL, ${expiryColumn} = NULL WHERE id = $1`;
-    db.query(clearQuery, [userId], (err) => {
-      if (err) {
-        console.error('Database clear error:', err);
+    // Return user info (without PIN hash)
+    return res.json({
+      success: true,
+      user: {
+        id: user.id,
+        name: user.name,
+        username: user.username,
+        email: user.email,
+        phone: user.phone
       }
-
-      res.json({
-        success: true,
-        message: 'Sign in successful!',
-        userId: user.id,
-        user: {
-          name: user.name,
-          phone: user.phone,
-          email: user.email
-        }
-      });
     });
-  });
+  } catch (error) {
+    console.error('Signin error:', error);
+    return res.status(500).json({ error: 'Failed to sign in.' });
+  }
 });
 
 export default router;
