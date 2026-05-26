@@ -99,6 +99,15 @@ app.use('/api/ai', aiRoutes);
 const messagesRoutes = require('./routes/messages');
 app.use('/api/messages', messagesRoutes);
 
+// Serve built React frontend in production
+if (process.env.NODE_ENV === 'production') {
+  const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
+  app.use(express.static(frontendDist));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(frontendDist, 'index.html'));
+  });
+}
+
 // Global error handler — must be last, after all routes
 app.use((err, req, res, next) => {
   console.error(err.stack);
