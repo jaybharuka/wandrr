@@ -62,8 +62,16 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {});
 });
 
+const { verifyToken } = require('./middleware/auth');
+
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+
+// Protect all /api routes except /api/auth
+app.use('/api', (req, res, next) => {
+  if (req.path.startsWith('/auth')) return next();
+  verifyToken(req, res, next);
+});
 
 const bookingsRoutes = require('./routes/bookings');
 app.use('/api/bookings', bookingsRoutes);

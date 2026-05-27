@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { UserProvider } from "./UserContext";
+import ProtectedRoute from "./ProtectedRoute";
 
 // Lazy-load all pages for code splitting
 const LandingPage      = lazy(() => import("./LandingPage"));
@@ -72,16 +73,16 @@ function App() {
           <Suspense fallback={<Spinner />}>
             <Routes>
               <Route path="/"              element={<LandingPage />} />
-              <Route path="/menu"          element={<MainMenu />} />
               <Route path="/signin"        element={<SignInPage />} />
               <Route path="/signup"        element={<SignUpPage />} />
-              <Route path="/tinder"        element={<TinderLikePage />} />
-              <Route path="/travel-groups" element={<TravelGroupsPageWrapper />} />
-              <Route path="/matches"       element={<MatchesPage />} />
-              <Route path="/ai-agent"      element={<AIPage />} />
-              <Route path="/plan-bookings" element={<PlanBookingsPage />} />
-              <Route path="/my-bookings"   element={<MyBookingsPage />} />
-              <Route path="/profile"       element={<ProfilePage />} />
+              <Route path="/menu"          element={<ProtectedRoute><MainMenu /></ProtectedRoute>} />
+              <Route path="/tinder"        element={<ProtectedRoute><TinderLikePage /></ProtectedRoute>} />
+              <Route path="/travel-groups" element={<ProtectedRoute><TravelGroupsPageWrapper /></ProtectedRoute>} />
+              <Route path="/matches"       element={<ProtectedRoute><MatchesPage /></ProtectedRoute>} />
+              <Route path="/ai-agent"      element={<ProtectedRoute><AIPage /></ProtectedRoute>} />
+              <Route path="/plan-bookings" element={<ProtectedRoute><PlanBookingsPage /></ProtectedRoute>} />
+              <Route path="/my-bookings"   element={<ProtectedRoute><MyBookingsPage /></ProtectedRoute>} />
+              <Route path="/profile"       element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               {/* Catch-all: redirect unknown URLs to home */}
               <Route path="*"              element={<Navigate to="/" replace />} />
             </Routes>

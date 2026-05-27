@@ -1,6 +1,15 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const db = require('../config/db');
+
+function signToken(user) {
+  return jwt.sign(
+    { id: user.id, username: user.username, email: user.email },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  );
+}
 
 const router = express.Router();
 
@@ -65,6 +74,7 @@ router.post('/signup', async (req, res) => {
           return res.status(201).json({
             success: true,
             message: 'Account created',
+            token: signToken(user),
             user: {
               id: user.id,
               name: user.name,
@@ -117,6 +127,7 @@ router.post('/signin', async (req, res) => {
         // Return user info (without PIN hash)
         return res.json({
           success: true,
+          token: signToken(user),
           user: {
             id: user.id,
             name: user.name,

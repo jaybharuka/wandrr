@@ -9,6 +9,8 @@ export function UserProvider({ children }) {
     return stored ? JSON.parse(stored) : null;
   });
 
+  const [token, setTokenState] = useState(() => localStorage.getItem("token") || null);
+
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem("theme") === "dark");
 
   useEffect(() => {
@@ -18,6 +20,14 @@ export function UserProvider({ children }) {
       localStorage.removeItem("user");
     }
   }, [user]);
+
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
 
   useEffect(() => {
     if (darkMode) {
@@ -31,11 +41,16 @@ export function UserProvider({ children }) {
 
   const toggleDarkMode = () => setDarkMode(prev => !prev);
 
-  const setUser = (userData) => setUserState(userData);
+  const setUser = (userData, jwtToken) => {
+    setUserState(userData);
+    if (jwtToken !== undefined) setTokenState(jwtToken);
+  };
 
   const logout = () => {
     setUserState(null);
+    setTokenState(null);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   const userId = user?.id || null;
@@ -44,7 +59,7 @@ export function UserProvider({ children }) {
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, userId, setUserId, logout, darkMode, toggleDarkMode }}>
+    <UserContext.Provider value={{ user, setUser, userId, setUserId, logout, darkMode, toggleDarkMode, token }}>
       {children}
     </UserContext.Provider>
   );

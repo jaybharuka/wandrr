@@ -37,7 +37,7 @@ export default function SignInPage() {
         return;
       }
 
-      setUser(data.user);
+      setUser(data.user, data.token);
       navigate("/menu");
     } catch (err) {
       setError("Network error. Please try again.");
