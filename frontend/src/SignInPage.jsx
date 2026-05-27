@@ -54,7 +54,7 @@ export default function SignInPage() {
       {/* Left — branding panel */}
       <div className="hidden lg:flex flex-col justify-between w-2/5 bg-gray-50 dark:bg-[#1a1a1a] border-r border-gray-100 dark:border-[#2a2a2a] p-12">
         <span style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: "1.75rem", letterSpacing: "-0.02em" }} className="text-gray-900 dark:text-[#f5f5f5]">
-          YAATRA<sup style={{ fontSize: "0.5em", verticalAlign: "super" }}>®</sup>
+          WANDRR<sup style={{ fontSize: "0.5em", verticalAlign: "super" }}>®</sup>
         </span>
 
         <div>
@@ -80,7 +80,7 @@ export default function SignInPage() {
           </div>
         </div>
 
-        <p className="text-gray-400 dark:text-[#737373] text-xs">© 2025 YAATRA. All rights reserved.</p>
+        <p className="text-gray-400 dark:text-[#737373] text-xs">© 2025 WANDRR. All rights reserved.</p>
       </div>
 
       {/* Right — form */}
